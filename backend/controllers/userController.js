@@ -10,7 +10,7 @@ const signupUser = async (req, res) => {
     const user = await User.findOne({ $or: [{ email }, { username }] });
 
     if (user) {
-      return res.status(400).json({ message: "Tên này đã tồn tại" });
+      return res.status(400).json({ error: "Tên này đã tồn tại" });
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -35,10 +35,10 @@ const signupUser = async (req, res) => {
     } else {
       res
         .status(404)
-        .json({ message: "Không thể xác thực thông tin người dùng" });
+        .json({ error: "Không thể xác thực thông tin người dùng" });
     }
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ error: err.message });
     console.log("Error in signupUser: ", err.message);
   }
 };
@@ -56,7 +56,7 @@ const loginUser = async (req, res) => {
     if (!user || !isPasswordCorrect) {
       return res
         .status(400)
-        .json({ message: "Tên đăng nhập hoặc mật khẩu không đúng" });
+        .json({ error: "Tên đăng nhập hoặc mật khẩu không đúng" });
     }
 
     generateTokenAndSetCookie(user._id, res);
@@ -68,7 +68,7 @@ const loginUser = async (req, res) => {
       username: user.username,
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ error: error.message });
     console.log("Error in loginuser: ", error.message);
   }
 };
@@ -79,7 +79,7 @@ const logoutUser = (req, res) => {
     res.cookie("jwt", "", { maxAge: 1 });
     res.status(200).json({ message: "Đã đăng xuất" });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ error: error.message });
     console.log("Error in logout user: ", error.message);
   }
 };
@@ -125,13 +125,13 @@ const updateUser = async (req, res) => {
   try {
     let user = await User.findById(userId);
     if (!user) {
-      return res.status(400).json({ message: "User not found" });
+      return res.status(400).json({ error: "User not found" });
     }
 
     if (req.params.id !== userId.toString()) {
       return res
         .status(400)
-        .json({ message: "You cannot update other user's profile" });
+        .json({ error: "You cannot update other user's profile" });
     }
 
     if (password) {
@@ -163,12 +163,12 @@ const getUserProfile = async (req, res) => {
       .select("-password")
       .select("-updatedAt");
     if (!user) {
-      return res.status(400).json({ message: "User not found" });
+      return res.status(400).json({ error: "User not found" });
     }
 
     res.status(200).json(user);
   } catch (error) {
-    res.status(500), json({ message: error.message });
+    res.status(500), json({ error: error.message });
     console.log("Error in getUserProfile: ", error.message);
   }
 };
