@@ -10,6 +10,7 @@ import {
   Portal,
   Text,
   useToast,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { BsThreeDots } from "react-icons/bs";
 import { Link, useNavigate } from "react-router-dom";
@@ -86,6 +87,8 @@ const Post = ({ post, postedBy }) => {
       showToast("Error", error.message, "error");
     }
   };
+
+  const bgHover = useColorModeValue("gray.300", "gray.600");
 
   if (!user) return null;
 
@@ -176,14 +179,18 @@ const Post = ({ post, postedBy }) => {
                 justifyContent="center"
                 alignItems="center"
                 onClick={handleMenuClick}
+                _hover={{ bg: bgHover }}
               >
                 <Menu>
                   <MenuButton>
                     <BsThreeDots cursor={"pointer"} />
                   </MenuButton>
                   <Portal>
-                    <MenuList bg={"gray.dark"}>
-                      <MenuItem bg={"gray.dark"} onClick={copyURL}>
+                    <MenuList bg={useColorModeValue("gray.200", "gray.dark")}>
+                      <MenuItem
+                        bg={useColorModeValue("gray.200", "gray.dark")}
+                        onClick={copyURL}
+                      >
                         Copy Link
                       </MenuItem>
                     </MenuList>
