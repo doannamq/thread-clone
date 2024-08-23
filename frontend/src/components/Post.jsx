@@ -19,14 +19,15 @@ import { CgMoreO } from "react-icons/cg";
 import useShowToast from "../hooks/useShowToast";
 import { formatDistanceToNow } from "date-fns";
 import { DeleteIcon } from "@chakra-ui/icons";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import userAtom from "../../atoms/userAtom";
+import postsAtom from "../../atoms/postsAtom";
 
 const Post = ({ post, postedBy }) => {
   const [user, setUser] = useState(null);
   const showToast = useShowToast();
   const currentUser = useRecoilValue(userAtom);
-
+  const [posts, setPosts] = useRecoilState(postsAtom);
   const navigate = useNavigate();
 
   const toast = useToast();
@@ -80,6 +81,7 @@ const Post = ({ post, postedBy }) => {
         return;
       }
       showToast("Success", "Post deleted", "success");
+      setPosts(posts.filter((p) => p._id !== post._id));
     } catch (error) {
       showToast("Error", error.message, "error");
     }
@@ -103,39 +105,38 @@ const Post = ({ post, postedBy }) => {
           <Box w={"1px"} h={"full"} bg={"gray.light"} my={2}></Box>
           <Box position={"relative"} w={"full"}>
             {post.replies.length === 0 && <Text textAlign={"center"}>🥱</Text>}
-
             {post.replies[0] && (
               <Avatar
-                size={"xs"}
-                name="John Doe"
+                size="xs"
+                name="John doe"
                 src={post.replies[0].userProfilePic}
                 position={"absolute"}
                 top={"0px"}
-                left={"15px"}
+                left="15px"
                 padding={"2px"}
               />
             )}
 
             {post.replies[1] && (
               <Avatar
-                size={"xs"}
-                name="John Doe"
+                size="xs"
+                name="John doe"
                 src={post.replies[1].userProfilePic}
                 position={"absolute"}
                 bottom={"0px"}
-                right={"-5px"}
+                right="-5px"
                 padding={"2px"}
               />
             )}
 
             {post.replies[2] && (
               <Avatar
-                size={"xs"}
-                name="John Doe"
+                size="xs"
+                name="John doe"
                 src={post.replies[2].userProfilePic}
                 position={"absolute"}
                 bottom={"0px"}
-                right={"-5px"}
+                left="4px"
                 padding={"2px"}
               />
             )}
