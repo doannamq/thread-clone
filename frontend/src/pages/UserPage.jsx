@@ -17,6 +17,7 @@ const UserPage = () => {
 
   useEffect(() => {
     const getPosts = async () => {
+      if (!user) return;
       setFetchingPosts(true);
       try {
         const res = await fetch(`/api/posts/user/${username}`);
@@ -32,8 +33,7 @@ const UserPage = () => {
     };
 
     getPosts();
-  }, [username, showToast, setPosts]);
-  console.log("post is here and it is recoil state", posts);
+  }, [username, showToast, setPosts, user]);
 
   if (!user && loading) {
     return (
@@ -43,9 +43,7 @@ const UserPage = () => {
     );
   }
 
-  if (!user && !loading) {
-    return <h1>User not found</h1>;
-  }
+  if (!user && !loading) return <h1>User not found</h1>;
 
   return (
     <>
