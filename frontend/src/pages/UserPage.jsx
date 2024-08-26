@@ -49,7 +49,11 @@ const UserPage = () => {
     <>
       <UserHeader user={user} />
 
-      {!fetchingPosts && posts.length === 0 && <h1>User has not post</h1>}
+      {!fetchingPosts && posts.length === 0 && (
+        <h1 style={{ textAlign: "center", marginTop: "10px" }}>
+          User has not post
+        </h1>
+      )}
 
       {fetchingPosts && (
         <Flex justifyContent={"center"} my={12}>

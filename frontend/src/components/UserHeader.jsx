@@ -9,6 +9,7 @@ import {
   useToast,
   ChakraProvider,
   Button,
+  useColorModeValue,
 } from "@chakra-ui/react";
 import { BsInstagram } from "react-icons/bs";
 import { CgMoreO } from "react-icons/cg";
@@ -35,6 +36,8 @@ const UserHeader = ({ user }) => {
     });
   };
 
+  const bgHover = useColorModeValue("gray.300", "gray.600");
+
   return (
     <VStack gap={4} alignItems={"start"}>
       <Flex justifyContent={"space-between"} w={"full"}>
@@ -50,8 +53,8 @@ const UserHeader = ({ user }) => {
                 md: "sm",
                 lg: "md",
               }}
-              bg={"gray.dark"}
-              color={"gray.light"}
+              bg={useColorModeValue("gray.300", "gray.dark")}
+              color={useColorModeValue("gray.800", "gray.400")}
               p={1}
               borderRadius={"full"}
             >
@@ -88,7 +91,9 @@ const UserHeader = ({ user }) => {
 
       {currentUser?._id === user._id && (
         <Link as={RouterLink} to="/update">
-          <Button size={"sm"}>Update Profile</Button>
+          <Button size={"sm"} bg={useColorModeValue("gray.300", "gray.700")}>
+            Update Profile
+          </Button>
         </Link>
       )}
       {currentUser?._id !== user._id && (
@@ -103,17 +108,20 @@ const UserHeader = ({ user }) => {
           <Link color={"gray.light"}>instagram.com</Link>
         </Flex>
         <Flex>
-          <Box className="icon-container">
+          <Box className="icon-container" _hover={{ bg: bgHover }}>
             <BsInstagram size={24} cursor={"pointer"} />
           </Box>
-          <Box className="icon-container">
+          <Box className="icon-container" _hover={{ bg: bgHover }}>
             <Menu>
               <MenuButton>
                 <CgMoreO size={24} cursor={"pointer"} />
               </MenuButton>
               <Portal>
-                <MenuList bg={"gray.dark"}>
-                  <MenuItem bg={"gray.dark"} onClick={copyURL}>
+                <MenuList bg={useColorModeValue("gray.200", "gray.dark")}>
+                  <MenuItem
+                    bg={useColorModeValue("gray.200", "gray.dark")}
+                    onClick={copyURL}
+                  >
                     Copy Link
                   </MenuItem>
                 </MenuList>

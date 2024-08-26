@@ -15,6 +15,7 @@ import { useRecoilState } from "recoil";
 import userAtom from "../../atoms/userAtom";
 import usePreviewImg from "../hooks/usePreviewImg";
 import useShowToast from "../hooks/useShowToast";
+import { Link } from "react-router-dom";
 
 export default function UpdateProfilePage() {
   const [user, setUser] = useRecoilState(userAtom);
@@ -161,7 +162,7 @@ export default function UpdateProfilePage() {
                 bg: "red.500",
               }}
             >
-              Cancel
+              <Link to={`/${user.username}`}>Cancel</Link>
             </Button>
             <Button
               bg={"green.400"}

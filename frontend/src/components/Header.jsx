@@ -17,15 +17,18 @@ const Header = () => {
   const setAuthScreen = useSetRecoilState(authScreenAtom);
 
   return (
-    <Flex justifyContent={"space-between"} mt={6} mb={12}>
+    <Flex justifyContent={"space-between"} mt={6} mb="12">
       {user && (
-        <Link as={RouterLink} to={"/"}>
+        <Link as={RouterLink} to="/">
           <AiFillHome size={24} />
         </Link>
       )}
-
       {!user && (
-        <Link as={RouterLink} onClick={() => setAuthScreen("login")}>
+        <Link
+          as={RouterLink}
+          to={"/auth"}
+          onClick={() => setAuthScreen("login")}
+        >
           Login
         </Link>
       )}
@@ -34,7 +37,7 @@ const Header = () => {
         cursor={"pointer"}
         alt="logo"
         w={6}
-        src={colorMode == "dark" ? "/light-logo.svg" : "/dark-logo.svg"}
+        src={colorMode === "dark" ? "/light-logo.svg" : "/dark-logo.svg"}
         onClick={toggleColorMode}
       />
 
@@ -56,8 +59,12 @@ const Header = () => {
       )}
 
       {!user && (
-        <Link as={RouterLink} onClick={() => setAuthScreen("signup")}>
-          Signup
+        <Link
+          as={RouterLink}
+          to={"/auth"}
+          onClick={() => setAuthScreen("signup")}
+        >
+          Sign up
         </Link>
       )}
     </Flex>

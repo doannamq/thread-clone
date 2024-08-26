@@ -33,8 +33,8 @@ const Conversation = ({ conversation, isOnline }) => {
       p={1}
       _hover={{
         cursor: "pointer",
-        bg: useColorModeValue("gray.600", "gray.dark"),
-        color: "white",
+        bg: useColorModeValue("gray.300", "gray.dark"),
+        color: useColorModeValue("gray.800", "gray.100"),
       }}
       onClick={() =>
         setSelectedConversation({
@@ -48,7 +48,7 @@ const Conversation = ({ conversation, isOnline }) => {
       bg={
         selectedConversation?._id === conversation._id
           ? colorMode === "light"
-            ? "gray.400"
+            ? "gray.100"
             : "gray.dark"
           : ""
       }

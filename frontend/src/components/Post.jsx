@@ -33,7 +33,8 @@ const Post = ({ post, postedBy }) => {
 
   const toast = useToast();
   const copyURL = () => {
-    const currentURL = window.location.href;
+    const currentURL = `${window.location.origin}/${user.username}/post/${post._id}`;
+
     navigator.clipboard.writeText(currentURL).then(() => {
       toast({
         title: "Notification",
@@ -111,7 +112,7 @@ const Post = ({ post, postedBy }) => {
             {post.replies[0] && (
               <Avatar
                 size="xs"
-                name="John doe"
+                name={post.replies[0].name}
                 src={post.replies[0].userProfilePic}
                 position={"absolute"}
                 top={"0px"}
@@ -123,7 +124,7 @@ const Post = ({ post, postedBy }) => {
             {post.replies[1] && (
               <Avatar
                 size="xs"
-                name="John doe"
+                name={post.replies[1].name}
                 src={post.replies[1].userProfilePic}
                 position={"absolute"}
                 bottom={"0px"}
@@ -135,7 +136,7 @@ const Post = ({ post, postedBy }) => {
             {post.replies[2] && (
               <Avatar
                 size="xs"
-                name="John doe"
+                name={post.replies[2].name}
                 src={post.replies[2].userProfilePic}
                 position={"absolute"}
                 bottom={"0px"}
