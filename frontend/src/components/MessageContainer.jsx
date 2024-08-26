@@ -124,7 +124,6 @@ const MessageContainer = () => {
       borderRadius={"md"}
       flexDirection={"column"}
     >
-      {/* Message header */}
       <Flex w={"full"} h={12} alignItems={"center"} gap={2}>
         <Avatar src={selectedConversation.userProfilePic} size={"sm"} />
         <Text display={"flex"} alignItems={"center"}>

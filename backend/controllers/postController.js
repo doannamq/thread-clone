@@ -165,6 +165,23 @@ const getFeedPosts = async (req, res) => {
   }
 };
 
+//Get New Feed Pots
+const getNewFeedPosts = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const newFeedPosts = await Post.find().sort({ likes: -1 }).limit(10).exec();
+
+    res.status(200).json(newFeedPosts);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 const getUserPosts = async (req, res) => {
   const { username } = req.params;
   try {
@@ -191,4 +208,5 @@ export {
   replyToPost,
   getFeedPosts,
   getUserPosts,
+  getNewFeedPosts,
 };

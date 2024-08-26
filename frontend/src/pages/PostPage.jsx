@@ -20,6 +20,8 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import userAtom from "../../atoms/userAtom";
 import { DeleteIcon } from "@chakra-ui/icons";
 import postsAtom from "../../atoms/postsAtom";
+import useResizeImage from "../hooks/useResizeImage";
+import ImageModal from "../components/ImageModal"; // Import modal component
 
 const PostPage = () => {
   const { user, loading } = useGetUserProfile();
@@ -27,7 +29,11 @@ const PostPage = () => {
   const showToast = useShowToast();
   const { pid } = useParams();
   const currentUser = useRecoilValue(userAtom);
+  const { imgSize } = useResizeImage(800, 500);
   const navigate = useNavigate();
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedImg, setSelectedImg] = useState(null);
 
   const currentPost = posts[0];
   useEffect(() => {
@@ -64,6 +70,16 @@ const PostPage = () => {
     } catch (error) {
       showToast("Error", error.message, "error");
     }
+  };
+
+  const openImageModal = (imgSrc) => {
+    setSelectedImg(imgSrc);
+    setIsModalOpen(true);
+  };
+
+  const closeImageModal = () => {
+    setIsModalOpen(false);
+    setSelectedImg(null);
   };
 
   if (!user && loading) {
@@ -112,13 +128,15 @@ const PostPage = () => {
       <Text my={3}>{currentPost.text}</Text>
 
       {currentPost.img && (
-        <Box
-          borderRadius={6}
-          overflow={"hidden"}
-          border={"1px solid "}
-          borderColor={"gray.light"}
-        >
-          <Image src={currentPost.img} w={"full"} />
+        <Box borderRadius={6}>
+          <Image
+            src={currentPost.img}
+            w={"full"}
+            style={{ width: imgSize.width, height: imgSize.height }}
+            borderRadius={6}
+            onClick={() => openImageModal(currentPost.img)}
+            cursor="pointer"
+          />
         </Box>
       )}
 
@@ -147,6 +165,12 @@ const PostPage = () => {
           }
         />
       ))}
+
+      <ImageModal
+        isOpen={isModalOpen}
+        onClose={closeImageModal}
+        imgSrc={selectedImg}
+      />
     </>
   );
 };

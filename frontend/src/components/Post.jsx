@@ -23,12 +23,14 @@ import { DeleteIcon } from "@chakra-ui/icons";
 import { useRecoilState, useRecoilValue } from "recoil";
 import userAtom from "../../atoms/userAtom";
 import postsAtom from "../../atoms/postsAtom";
+import useResizeImage from "../hooks/useResizeImage";
 
 const Post = ({ post, postedBy }) => {
   const [user, setUser] = useState(null);
   const showToast = useShowToast();
   const currentUser = useRecoilValue(userAtom);
   const [posts, setPosts] = useRecoilState(postsAtom);
+  const { imgSize, handleImageLoad } = useResizeImage(800, 500);
   const navigate = useNavigate();
 
   const toast = useToast();
@@ -203,13 +205,14 @@ const Post = ({ post, postedBy }) => {
 
           <Text fontSize={"sm"}>{post.text}</Text>
           {post.img && (
-            <Box
-              borderRadius={6}
-              overflow={"hidden"}
-              border={"1px solid "}
-              borderColor={"gray.light"}
-            >
-              <Image src={post.img} w={"full"} />
+            <Box overflow={"hidden"}>
+              <Image
+                src={post.img}
+                // w={"full"}
+                onLoad={handleImageLoad}
+                style={{ width: imgSize.width, height: imgSize.height }}
+                borderRadius={6}
+              />
             </Box>
           )}
           <Flex gap={3} my={1}>
