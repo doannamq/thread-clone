@@ -174,7 +174,19 @@ const getNewFeedPosts = async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    const newFeedPosts = await Post.find().sort({ likes: -1 }).limit(10).exec();
+    const newFeedPosts = await Post.aggregate([
+      {
+        $addFields: {
+          likesCount: { $size: "$likes" },
+        },
+      },
+      {
+        $sort: { likesCount: -1 },
+      },
+      {
+        $limit: 10,
+      },
+    ]);
 
     res.status(200).json(newFeedPosts);
   } catch (error) {

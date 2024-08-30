@@ -241,7 +241,7 @@ const getSuggestedUsers = async (req, res) => {
     const filterdUsers = users.filter(
       (user) => !usersFollowedByYou.following.includes(user._id)
     );
-    const suggestedUsers = filterdUsers.slice(0, 5);
+    const suggestedUsers = filterdUsers.slice(0, 4);
 
     suggestedUsers.forEach((user) => (user.password = null));
 
@@ -250,6 +250,7 @@ const getSuggestedUsers = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
 const freezeAccount = async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
@@ -266,6 +267,18 @@ const freezeAccount = async (req, res) => {
   }
 };
 
+const searchUsers = async (req, res) => {
+  try {
+    const query = req.query.query || "";
+    const user = await User.find({
+      username: { $regex: query, $options: "i" },
+    }).select("name username profilePic followers");
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 export {
   signupUser,
   loginUser,
@@ -275,4 +288,5 @@ export {
   getUserProfile,
   getSuggestedUsers,
   freezeAccount,
+  searchUsers,
 };

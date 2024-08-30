@@ -1,6 +1,5 @@
-import { Box, Button, Flex, Spinner } from "@chakra-ui/react";
+import { Box, Flex, Skeleton, Spinner } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import useShowToast from "../hooks/useShowToast";
 import Post from "../components/Post";
 import { useRecoilState } from "recoil";
@@ -9,7 +8,6 @@ import SuggestedUsers from "../components/SuggestedUsers";
 
 const HomePage = () => {
   const [posts, setPosts] = useRecoilState(postsAtom);
-  const [newFeedPosts, setNewFeedPosts] = useRecoilState(postsAtom);
   const [loading, setLoading] = useState(true);
   const showToast = useShowToast();
 
@@ -17,27 +15,35 @@ const HomePage = () => {
     const fetchPosts = async () => {
       setLoading(true);
       try {
+        // Gửi cả hai yêu cầu API song song
         const [feedResponse, newFeedResponse] = await Promise.all([
           fetch("/api/posts/feed"),
           fetch("/api/posts/newfeed"),
         ]);
 
-        const [feedData, newFeedData] = await Promise.all([
-          feedResponse.json(),
-          newFeedResponse.json(),
-        ]);
+        const feedData = await feedResponse.json();
+        const newFeedData = await newFeedResponse.json();
 
         if (feedData.error) {
           showToast("Error", feedData.error, "error");
-        } else {
-          setPosts(feedData);
+          return;
         }
 
         if (newFeedData.error) {
           showToast("Error", newFeedData.error, "error");
-        } else {
-          setNewFeedPosts(newFeedData);
+          return;
         }
+
+        console.log("Feed Posts", feedData);
+        console.log("New Feed Posts", newFeedData);
+
+        const existingPostIds = new Set(feedData.map((post) => post.id));
+
+        const filteredNewFeedData = newFeedData.filter(
+          (post) => !existingPostIds.has(post.id)
+        );
+
+        setPosts([...feedData, ...filteredNewFeedData]);
       } catch (error) {
         showToast("Error", error.message, "error");
       } finally {
@@ -46,58 +52,48 @@ const HomePage = () => {
     };
 
     fetchPosts();
-  }, [showToast, setPosts, setNewFeedPosts]);
-
-  const newFeedPostIds = new Set(newFeedPosts.map((post) => post._id));
-
-  const filteredPosts = posts.filter((post) => !newFeedPostIds.has(post._id));
+  }, [showToast, setPosts]);
 
   return (
-    <Flex gap={10} alignItems={"flex-start"}>
-      <Box flex={70}>
-        {loading ? (
-          <Flex justify={"center"}>
-            <Spinner size={"xl"} />
-          </Flex>
-        ) : (
-          <>
-            {newFeedPosts.length > 0 && (
-              <Box mb={8}>
-                {newFeedPosts.map((newFeedPost) => (
-                  <Post
-                    key={newFeedPost._id}
-                    post={newFeedPost}
-                    postedBy={newFeedPost.postedBy}
-                  />
-                ))}
-              </Box>
-            )}
+    <Flex gap="10" alignItems={"flex-start"}>
+      <Box>
+        {loading &&
+          [0, 1, 2, 3, 4].map((_, idx) => (
+            <Flex flexDir={"column"} gap={2} key={idx}>
+              <Flex alignItems={"center"}>
+                <Skeleton h={12} w={12} borderRadius={"full"} mr={2} />
+                <Skeleton h={8} w={"30%"} />
+              </Flex>
+              <Skeleton h={8} w={"50%"} ml={14} mb={2} />
+              <Skeleton h={60} w={"70%"} ml={14} mb={2} />
+            </Flex>
+          ))}
 
-            {filteredPosts.length === 0 && (
-              <h1 style={{ textAlign: "center", padding: "0px 0px 30px 0px" }}>
-                Follow some users to see more feeds!
-              </h1>
-            )}
+        {posts.slice(0, 7).map((post) => (
+          <Post key={post._id} post={post} postedBy={post.postedBy} />
+        ))}
 
-            {filteredPosts.length > 0 && (
-              <>
-                {filteredPosts.map((post) => (
-                  <Post key={post._id} post={post} postedBy={post.postedBy} />
-                ))}
-              </>
-            )}
-          </>
-        )}
+        <Box
+          display={{
+            base: "none",
+            md: "block",
+          }}
+        >
+          <SuggestedUsers />
+        </Box>
+
+        {posts.slice(7).map((post) => (
+          <Post key={post._id} post={post} postedBy={post.postedBy} />
+        ))}
       </Box>
-      <Box
-        flex={30}
+      {/* <Box
         display={{
           base: "none",
           md: "block",
         }}
       >
         <SuggestedUsers />
-      </Box>
+      </Box> */}
     </Flex>
   );
 };

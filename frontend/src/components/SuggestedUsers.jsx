@@ -1,4 +1,12 @@
-import { Avatar, Box, Button, Flex, Skeleton, Text } from "@chakra-ui/react";
+import {
+  Avatar,
+  Box,
+  Button,
+  Divider,
+  Flex,
+  Skeleton,
+  Text,
+} from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import SuggestedUser from "./SuggestedUser";
@@ -36,7 +44,7 @@ const SuggestedUsers = () => {
       <Text mb={4} fontWeight={"bold"}>
         Suggested Users
       </Text>
-      <Flex direction={"column"} gap={4}>
+      <Flex gap={4}>
         {!loading &&
           suggestedUsers.map((user) => (
             <SuggestedUser key={user._id} user={user} />
@@ -66,6 +74,7 @@ const SuggestedUsers = () => {
             </Flex>
           ))}
       </Flex>
+      <Divider bg={"gray"} mt={2} />
     </>
   );
 };

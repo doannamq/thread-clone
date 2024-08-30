@@ -76,8 +76,8 @@ const UserHeader = ({ user }) => {
 
           {!user.profilePic && (
             <Avatar
-              name={user.name}
-              src="https://bit.ly/broken-link"
+              // name={user.name}
+              // src="https://bit.ly/broken-link"
               size={{
                 base: "md",
                 md: "xl",

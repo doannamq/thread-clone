@@ -1,6 +1,7 @@
 import { Button, Text } from "@chakra-ui/react";
 import useShowToast from "../hooks/useShowToast";
 import useLogout from "../hooks/useLogout";
+import { FiLogOut } from "react-icons/fi";
 
 export const SettingsPage = () => {
   const showToast = useShowToast();
@@ -38,6 +39,9 @@ export const SettingsPage = () => {
       <Text my={1}>You can unfreeze your account anytime by logging in.</Text>
       <Button size={"sm"} colorScheme="red" onClick={freezeAccount}>
         Freeze
+      </Button>
+      <Button size={"xs"} onClick={logout}>
+        <FiLogOut size={20} />
       </Button>
     </>
   );
