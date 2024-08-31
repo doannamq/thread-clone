@@ -11,6 +11,7 @@ import {
   ModalHeader,
   ModalOverlay,
   Spinner,
+  useColorModeValue,
   useDisclosure,
 } from "@chakra-ui/react";
 import { useRef, useState } from "react";
@@ -94,6 +95,9 @@ const MessageInput = ({ setMessages }) => {
             placeholder="Type a message"
             onChange={(e) => setMessageText(e.target.value)}
             value={messageText}
+            borderWidth={"1px"}
+            borderStyle={"solid"}
+            borderColor={useColorModeValue("gray.800", "gray.300")}
           />
           <InputRightElement onClick={handleSendMessage} cursor={"pointer"}>
             <IoSendSharp />

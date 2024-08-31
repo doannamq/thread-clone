@@ -9,6 +9,7 @@ import {
   getSuggestedUsers,
   freezeAccount,
   searchUsers,
+  searchSuggestedUser,
 } from "../controllers/userController.js";
 import protectRoute from "../middlewares/protectRoute.js";
 
@@ -18,6 +19,7 @@ router.get("/profile/:query", getUserProfile);
 router.get("/suggested", protectRoute, getSuggestedUsers);
 
 router.get("/search", protectRoute, searchUsers);
+router.get("/search-suggested-users", protectRoute, searchSuggestedUser);
 
 router.post("/signup", signupUser);
 router.post("/login", loginUser);

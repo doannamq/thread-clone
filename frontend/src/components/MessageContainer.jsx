@@ -123,6 +123,7 @@ const MessageContainer = () => {
       bg={useColorModeValue("gray.200", "gray.dark")}
       borderRadius={"md"}
       flexDirection={"column"}
+      mb={"50px"}
     >
       <Flex w={"full"} h={12} alignItems={"center"} gap={2}>
         <Avatar src={selectedConversation.userProfilePic} size={"sm"} />

@@ -96,6 +96,7 @@ const CreatePost = () => {
         bg={useColorModeValue("gray.300", "gray.dark")}
         onClick={onOpen}
         size={{ base: "sm", sm: "md" }}
+        display={{ base: "none", md: "block" }}
       >
         <AddIcon />
       </Button>

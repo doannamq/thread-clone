@@ -269,11 +269,23 @@ const freezeAccount = async (req, res) => {
 
 const searchUsers = async (req, res) => {
   try {
-    const query = req.query.query || "";
+    const query = req.query.q || "";
     const user = await User.find({
       username: { $regex: query, $options: "i" },
     }).select("name username profilePic followers");
     res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const searchSuggestedUser = async (req, res) => {
+  try {
+    const mostFollowedUsers = await User.find()
+      .sort({ followersCount: -1 })
+      .limit(10);
+
+    res.status(200).json(mostFollowedUsers);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -289,4 +301,5 @@ export {
   getSuggestedUsers,
   freezeAccount,
   searchUsers,
+  searchSuggestedUser,
 };

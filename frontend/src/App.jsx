@@ -14,6 +14,7 @@ import CreatePost from "./components/CreatePost";
 import ChatPage from "./pages/ChatPage";
 import { SettingsPage } from "./pages/SettingsPage";
 import SuggestedUsers from "./components/SuggestedUsers";
+import SearchUserPage from "./pages/SearchUsersPage";
 
 function App() {
   const user = useRecoilValue(userAtom);
@@ -68,6 +69,7 @@ function App() {
               path="/settings"
               element={user ? <SettingsPage /> : <Navigate to={"/auth"} />}
             />
+            <Route path="/search" element={<SearchUserPage />} />
           </Routes>
         </Container>
       </Box>

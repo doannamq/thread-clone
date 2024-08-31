@@ -55,17 +55,22 @@ const HomePage = () => {
   }, [showToast, setPosts]);
 
   return (
-    <Flex gap="10" alignItems={"flex-start"}>
+    <Flex gap="10" alignItems={"flex-start"} mt={"20px"}>
       <Box>
         {loading &&
           [0, 1, 2, 3, 4].map((_, idx) => (
             <Flex flexDir={"column"} gap={2} key={idx}>
               <Flex alignItems={"center"}>
                 <Skeleton h={12} w={12} borderRadius={"full"} mr={2} />
-                <Skeleton h={8} w={"30%"} />
+                <Skeleton h={8} w={{ base: "25%", md: "200px" }} />
               </Flex>
-              <Skeleton h={8} w={"50%"} ml={14} mb={2} />
-              <Skeleton h={60} w={"70%"} ml={14} mb={2} />
+              <Skeleton h={8} w={{ base: "50%", md: "250px" }} ml={14} mb={2} />
+              <Skeleton
+                h={{ base: 40, md: 60 }}
+                w={{ base: "250px", md: "500px" }}
+                ml={14}
+                mb={2}
+              />
             </Flex>
           ))}
 

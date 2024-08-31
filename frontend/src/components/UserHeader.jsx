@@ -39,7 +39,7 @@ const UserHeader = ({ user }) => {
   const bgHover = useColorModeValue("gray.300", "gray.600");
 
   return (
-    <VStack gap={4} alignItems={"start"}>
+    <VStack gap={4} alignItems={"start"} mt={"30px"}>
       <Flex justifyContent={"space-between"} w={"full"}>
         <Box>
           <Text fontSize={"2xl"} fontWeight={"bold"}>

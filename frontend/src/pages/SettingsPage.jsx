@@ -1,4 +1,4 @@
-import { Button, Text } from "@chakra-ui/react";
+import { Box, Button, Text } from "@chakra-ui/react";
 import useShowToast from "../hooks/useShowToast";
 import useLogout from "../hooks/useLogout";
 import { FiLogOut } from "react-icons/fi";
@@ -32,7 +32,7 @@ export const SettingsPage = () => {
   };
 
   return (
-    <>
+    <Box mt={"50px"}>
       <Text my={1} fontWeight={"bold"}>
         Freeze Your Account
       </Text>
@@ -43,6 +43,6 @@ export const SettingsPage = () => {
       <Button size={"xs"} onClick={logout}>
         <FiLogOut size={20} />
       </Button>
-    </>
+    </Box>
   );
 };

@@ -140,6 +140,7 @@ const ChatPage = () => {
         lg: "750px",
       }}
       p={4}
+      mt={"50px"}
     >
       <Flex
         gap={4}
@@ -174,6 +175,9 @@ const ChatPage = () => {
               <Input
                 placeholder="Search for a user"
                 onChange={(e) => setSearchText(e.target.value)}
+                borderWidth={"1px"}
+                borderStyle={"solid"}
+                borderColor={useColorModeValue("gray.800", "gray.300")}
               />
               <Button
                 size={"sm"}
