@@ -145,6 +145,25 @@ const replyToPost = async (req, res) => {
 };
 
 //Feed Post
+// const getFeedPosts = async (req, res) => {
+//   try {
+//     const userId = req.user._id;
+//     const user = await User.findById(userId);
+//     if (!user) {
+//       return res.status(404).json({ error: "User not found" });
+//     }
+
+//     const following = user.following;
+
+//     const feedPosts = await Post.find({ postedBy: { $in: following } }).sort({
+//       createdAt: -1,
+//     });
+
+//     res.status(200).json(feedPosts);
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// };
 const getFeedPosts = async (req, res) => {
   try {
     const userId = req.user._id;
@@ -155,9 +174,15 @@ const getFeedPosts = async (req, res) => {
 
     const following = user.following;
 
-    const feedPosts = await Post.find({ postedBy: { $in: following } }).sort({
-      createdAt: -1,
-    });
+    // Pagination
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 3;
+    const skip = (page - 1) * limit;
+
+    const feedPosts = await Post.find({ postedBy: { $in: following } })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
 
     res.status(200).json(feedPosts);
   } catch (error) {

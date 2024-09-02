@@ -16,6 +16,7 @@ const SuggestedUsers = () => {
   const [loading, setLoading] = useState(true);
   const [suggestedUsers, setSuggestedUsers] = useState([]);
   const showToast = useShowToast();
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   useEffect(() => {
     const getSuggestedUsers = async () => {
@@ -39,12 +40,24 @@ const SuggestedUsers = () => {
     getSuggestedUsers();
   }, [showToast]);
 
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  let display = windowWidth > 1350 ? "block" : "none";
+
   return (
-    <>
+    <Box position={"absolute"} top={10} right={20} display={display}>
       <Text mb={4} fontWeight={"bold"}>
         Suggested Users
       </Text>
-      <Flex gap={4}>
+      <Flex gap={4} flexDirection={"column"}>
         {!loading &&
           suggestedUsers.map((user) => (
             <SuggestedUser key={user._id} user={user} />
@@ -64,8 +77,8 @@ const SuggestedUsers = () => {
               </Box>
 
               <Flex w={"full"} flexDirection={"column"} gap={2}>
-                <Skeleton h={"8px"} w={"80px"} />
-                <Skeleton h={"8px"} w={"90px"} />
+                <Skeleton h={"8px"} w={"120px"} />
+                <Skeleton h={"8px"} w={"150px"} />
               </Flex>
 
               <Flex>
@@ -74,8 +87,7 @@ const SuggestedUsers = () => {
             </Flex>
           ))}
       </Flex>
-      <Divider bg={"gray"} mt={2} />
-    </>
+    </Box>
   );
 };
 

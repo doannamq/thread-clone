@@ -35,16 +35,16 @@ const colors = {
 const theme = extendTheme({ config, styles, colors });
 
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <RecoilRoot>
-      <BrowserRouter>
-        <ChakraProvider theme={theme}>
-          <ColorModeScript initialColorMode={theme.config.initialColorMode} />
-          <SocketContextProvider>
-            <App />
-          </SocketContextProvider>
-        </ChakraProvider>
-      </BrowserRouter>
-    </RecoilRoot>
-  </StrictMode>
+  // <StrictMode>
+  <RecoilRoot>
+    <BrowserRouter>
+      <ChakraProvider theme={theme}>
+        <ColorModeScript initialColorMode={theme.config.initialColorMode} />
+        <SocketContextProvider>
+          <App />
+        </SocketContextProvider>
+      </ChakraProvider>
+    </BrowserRouter>
+  </RecoilRoot>
+  // </StrictMode>
 );

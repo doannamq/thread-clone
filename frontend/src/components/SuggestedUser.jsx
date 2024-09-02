@@ -1,44 +1,27 @@
-import {
-  Avatar,
-  Box,
-  Button,
-  Flex,
-  Text,
-  useColorMode,
-  useColorModeValue,
-} from "@chakra-ui/react";
+import { Avatar, Box, Button, Flex, Text } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
 import useFollowUnfollow from "../hooks/useFollowUnfollow";
 
 const SuggestedUser = ({ user }) => {
   const { handleFollowUnfollow, following, updating } = useFollowUnfollow(user);
 
-  const bg = useColorModeValue("gray.300", "gray.800");
-
   return (
-    // <Flex gap={2} justifyContent={"space-between"} alignItems={"center"}>
-    <Box textAlign={"center"} bg={bg} p={4} borderRadius={"xl"} w={"135px"}>
-      <Flex
-        gap={2}
-        as={Link}
-        to={`${user.username}`}
-        flexDirection={"column"}
-        alignItems={"center"}
-        mb={2}
-      >
+    <Flex gap={2} justifyContent={"space-between"} alignItems={"center"}>
+      {/* left side */}
+      <Flex gap={2} as={Link} to={`${user.username}`}>
         <Avatar src={user.profilePic} />
         <Box>
-          <Text fontSize={"sm"} fontWeight={"bold"} textAlign={"center"}>
-            {user.name.length > 10
-              ? user.name.substring(0, 10) + "..."
-              : user.name}
-          </Text>
-          <Text color={"gray.light"} fontSize={"sm"} textAlign={"center"}>
+          <Text fontSize={"sm"} fontWeight={"bold"}>
             {user.username}
+          </Text>
+          <Text color={"gray.light"} fontSize={"sm"}>
+            {user.name.length > 18
+              ? user.name.substring(0, 18) + "..."
+              : user.name}
           </Text>
         </Box>
       </Flex>
-
+      {/* right side */}
       <Button
         size={"sm"}
         color={following ? "black" : "white"}
@@ -49,11 +32,11 @@ const SuggestedUser = ({ user }) => {
           color: following ? "black" : "white",
           opacity: ".8",
         }}
+        ml={"10px"}
       >
         {following ? "Unfollow" : "Follow"}
       </Button>
-    </Box>
-    // </Flex>
+    </Flex>
   );
 };
 
