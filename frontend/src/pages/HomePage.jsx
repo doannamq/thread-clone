@@ -101,11 +101,9 @@ import { Box, Flex, Skeleton, Text } from "@chakra-ui/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Post from "../components/Post";
 import SuggestedUsers from "../components/SuggestedUsers";
-import { useRecoilState } from "recoil";
-import postsAtom from "../../atoms/postsAtom";
 
 const HomePage = () => {
-  const [posts, setPosts] = useRecoilState(postsAtom);
+  const [posts, setPosts] = useState([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
