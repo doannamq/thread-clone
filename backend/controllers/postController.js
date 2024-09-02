@@ -145,25 +145,6 @@ const replyToPost = async (req, res) => {
 };
 
 //Feed Post
-// const getFeedPosts = async (req, res) => {
-//   try {
-//     const userId = req.user._id;
-//     const user = await User.findById(userId);
-//     if (!user) {
-//       return res.status(404).json({ error: "User not found" });
-//     }
-
-//     const following = user.following;
-
-//     const feedPosts = await Post.find({ postedBy: { $in: following } }).sort({
-//       createdAt: -1,
-//     });
-
-//     res.status(200).json(feedPosts);
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// };
 const getFeedPosts = async (req, res) => {
   try {
     const userId = req.user._id;
@@ -185,35 +166,6 @@ const getFeedPosts = async (req, res) => {
       .limit(limit);
 
     res.status(200).json(feedPosts);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-};
-
-//Get New Feed Pots
-const getNewFeedPosts = async (req, res) => {
-  try {
-    const userId = req.user._id;
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
-    const newFeedPosts = await Post.aggregate([
-      {
-        $addFields: {
-          likesCount: { $size: "$likes" },
-        },
-      },
-      {
-        $sort: { likesCount: -1 },
-      },
-      {
-        $limit: 10,
-      },
-    ]);
-
-    res.status(200).json(newFeedPosts);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -245,5 +197,4 @@ export {
   replyToPost,
   getFeedPosts,
   getUserPosts,
-  getNewFeedPosts,
 };

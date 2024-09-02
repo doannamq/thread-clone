@@ -141,7 +141,7 @@ const PostPage = () => {
       )}
 
       <Flex gap={3} my={3}>
-        <Actions post={currentPost} />
+        <Actions post={currentPost} postUser={user} />
       </Flex>
 
       <Divider my={4} />

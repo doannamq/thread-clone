@@ -160,7 +160,7 @@ const Header = () => {
             >
               <IoAddSharp size={24} color={iconColor} onClick={onOpen} />
             </Link>
-            <Modal isOpen={isOpen} onClose={onClose}>
+            <Modal isOpen={isOpen} onClose={onClose} isCentered>
               <ModalOverlay />
               <ModalContent>
                 <ModalHeader>Create Post</ModalHeader>
@@ -232,15 +232,6 @@ const Header = () => {
             </Link>
           </Flex>
         )}
-        {!user && (
-          <Link
-            as={RouterLink}
-            to={"/auth"}
-            onClick={() => setAuthScreen("login")}
-          >
-            Login
-          </Link>
-        )}
 
         {user && (
           <Box
@@ -254,16 +245,6 @@ const Header = () => {
               <MdOutlineSettings size={20} color={iconColor} />
             </Link>
           </Box>
-        )}
-
-        {!user && (
-          <Link
-            as={RouterLink}
-            to={"/auth"}
-            onClick={() => setAuthScreen("signup")}
-          >
-            Sign up
-          </Link>
         )}
       </Flex>
     </Box>
