@@ -106,6 +106,7 @@ const HomePage = () => {
   const [posts, setPosts] = useState([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
 
   const fetchPosts = async (page, limit) => {
     const res = await fetch(`/api/posts/feed?page=${page}&limit=${limit}`);
@@ -116,19 +117,27 @@ const HomePage = () => {
   const loadMorePosts = async () => {
     setLoading(true);
     const newPosts = await fetchPosts(page, 3);
+
     setPosts((prevPosts) => [...prevPosts, ...newPosts]);
+
+    if (newPosts.length < 3) {
+      setHasMore(false);
+    }
+
     setLoading(false);
   };
 
   useEffect(() => {
-    loadMorePosts();
+    if (hasMore) {
+      loadMorePosts();
+    }
   }, [page]);
 
   const observer = useRef();
 
   const lastPostElementRef = useCallback(
     (node) => {
-      if (loading) return;
+      if (loading || !hasMore) return;
       if (observer.current) observer.current.disconnect();
 
       observer.current = new IntersectionObserver((entries) => {
@@ -138,15 +147,24 @@ const HomePage = () => {
       });
       if (node) observer.current.observe(node);
     },
-    [loading]
+    [loading, hasMore]
   );
 
   return (
     <>
       <Flex gap="10" alignItems={"flex-start"} mt={"20px"}>
         <Box>
+          {posts.map((post, index) => (
+            <Box
+              key={post._id}
+              ref={posts.length === index + 1 ? lastPostElementRef : null}
+            >
+              <Post key={post._id} post={post} postedBy={post.postedBy} />
+            </Box>
+          ))}
+
           {loading &&
-            [0, 1, 2, 3, 4].map((_, idx) => (
+            [0, 1, 2].map((_, idx) => (
               <Flex flexDir={"column"} gap={2} key={idx}>
                 <Flex alignItems={"center"}>
                   <Skeleton h={12} w={12} borderRadius={"full"} mr={2} />
@@ -167,17 +185,14 @@ const HomePage = () => {
               </Flex>
             ))}
 
-          {posts.map((post, index) => (
-            <Box
-              key={post._id}
-              ref={posts.length === index + 1 ? lastPostElementRef : null}
-            >
-              <Post key={post._id} post={post} postedBy={post.postedBy} />
-            </Box>
-          ))}
-
-          {posts.length === 0 && (
+          {posts.length === 0 && !loading && (
             <Text>Follow some users to see their posts</Text>
+          )}
+
+          {!hasMore && (
+            <Text my={4} textAlign="center">
+              Follow more users to see more posts
+            </Text>
           )}
         </Box>
       </Flex>
