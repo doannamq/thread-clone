@@ -101,9 +101,11 @@ import { Box, Flex, Skeleton, Text } from "@chakra-ui/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import Post from "../components/Post";
 import SuggestedUsers from "../components/SuggestedUsers";
+import { useRecoilState } from "recoil";
+import postsAtom from "../../atoms/postsAtom";
 
 const HomePage = () => {
-  const [posts, setPosts] = useState([]);
+  const [posts, setPosts] = useRecoilState(postsAtom);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -150,6 +152,12 @@ const HomePage = () => {
     [loading, hasMore]
   );
 
+  useEffect(() => {
+    setPosts([]);
+    setPage(1);
+    setHasMore(true);
+  }, []);
+
   return (
     <>
       <Flex gap="10" alignItems={"flex-start"} mt={"20px"}>
@@ -165,7 +173,7 @@ const HomePage = () => {
 
           {loading &&
             [0, 1, 2].map((_, idx) => (
-              <Flex flexDir={"column"} gap={2} key={idx}>
+              <Flex flexDir={"column"} gap={2} key={idx} mt={"5px"}>
                 <Flex alignItems={"center"}>
                   <Skeleton h={12} w={12} borderRadius={"full"} mr={2} />
                   <Skeleton h={8} w={{ base: "25%", md: "200px" }} />

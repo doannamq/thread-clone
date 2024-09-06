@@ -11,9 +11,12 @@ import {
   Avatar,
   Skeleton,
   Divider,
+  Button,
 } from "@chakra-ui/react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import useShowToast from "../hooks/useShowToast";
+import SearchSuggestedUsers from "../components/SearchSuggestedUsers";
+import SearchUser from "../components/SearchUser";
 
 const SearchUsersPage = () => {
   const [query, setQuery] = useState("");
@@ -23,6 +26,11 @@ const SearchUsersPage = () => {
   const showToast = useShowToast();
   const navigate = useNavigate();
   const location = useLocation();
+
+  useEffect(() => {
+    setQuery("");
+    navigate("", { replace: true });
+  }, []);
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
@@ -103,63 +111,31 @@ const SearchUsersPage = () => {
       />
 
       {query === "" &&
-        suggestedUsers.map((suggestedUser) => (
-          <Box mb={"20px"} key={suggestedUser.username}>
-            <Link to={`/${suggestedUser.username}`}>
-              <Flex flexDirection={"column"} gap={"10px"}>
-                <Flex gap={4}>
-                  <Avatar src={suggestedUser.profilePic} />
-                  <Flex flexDirection={"column"}>
-                    <Text fontWeight={"semibold"}>
-                      {suggestedUser.username}
-                    </Text>
-                    <Text color={useColorModeValue("gray.500", "gray.500")}>
-                      {suggestedUser.name}
-                    </Text>
-                  </Flex>
-                </Flex>
-                <Text ml={"65px"}>
-                  {suggestedUser.followers.length} followers
-                </Text>
-              </Flex>
-              <Divider mt={"15px"} />
-            </Link>
-          </Box>
+        suggestedUsers.map((user) => (
+          <SearchSuggestedUsers key={user._id} user={user} />
         ))}
 
       {loading &&
-        [0, 1, 2, 3, 4].map((_, idx) => (
-          <Flex gap={"10px"} key={idx} mb={"20px"}>
-            <Skeleton h={"50px"} w={"50px"} borderRadius={"full"} />
-            <Flex flexDirection={"column"} gap={"10px"}>
-              <Skeleton h={"20px"} w={"200px"} />
-              <Skeleton h={"20px"} w={"300px"} />
+        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((_, idx) => (
+          <Box mt={5}>
+            <Flex alignItems={"center"} justifyContent={"space-between"}>
+              <Flex gap={"10px"} key={idx} mb={"20px"}>
+                <Skeleton h={"50px"} w={"50px"} borderRadius={"full"} />
+                <Flex flexDirection={"column"}>
+                  <Flex flexDirection={"column"} gap={"10px"}>
+                    <Skeleton h={"20px"} w={"200px"} />
+                    <Skeleton h={"20px"} w={"300px"} />
+                  </Flex>
+                  <Skeleton h={"20px"} w={"100px"} mt={5} />
+                </Flex>
+              </Flex>
+              <Skeleton h={"30px"} w={"80px"} borderRadius={"md"} />
             </Flex>
-          </Flex>
+            <Skeleton h={"1px"} w={"full"} />
+          </Box>
         ))}
 
-      <List spacing={2}>
-        {!loading &&
-          users.map((user) => (
-            <ListItem key={user.id} mb={"20px"}>
-              <Link to={`/${user.username}`}>
-                <Flex flexDirection={"column"}>
-                  <Flex gap={4}>
-                    <Avatar src={user.profilePic} />
-                    <Flex flexDirection={"column"}>
-                      <Text fontWeight={"semibold"}>{user.username}</Text>
-                      <Text color={useColorModeValue("gray.500", "gray.500")}>
-                        {user.name}
-                      </Text>
-                    </Flex>
-                  </Flex>
-                  <Text ml={"65px"}>{user.followers.length} followers</Text>
-                </Flex>
-                <Divider mt={"20px"} />
-              </Link>
-            </ListItem>
-          ))}
-      </List>
+      {!loading && users.map((user) => <SearchUser user={user} />)}
     </Box>
   );
 };

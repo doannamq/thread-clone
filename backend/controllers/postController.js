@@ -35,7 +35,13 @@ const createPost = async (req, res) => {
       img = uploadResponse.secure_url;
     }
 
-    const newPost = new Post({ postedBy, text, img });
+    const newPost = new Post({
+      postedBy,
+      text,
+      img,
+      username: user.username,
+      userProfilePic: user.profilePic,
+    });
 
     await newPost.save();
 
@@ -85,6 +91,31 @@ const deletePost = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+// const deletePost = async (req, res) => {
+//   try {
+//     const post = await Post.findById(req.params.id);
+//     if (!post) {
+//       return res.status(404).json({ error: "Post not found" });
+//     }
+
+//     if (post.postedBy.toString() !== req.user._id.toString()) {
+//       return res.status(401).json({ error: "Unauthorized to delete post" });
+//     }
+
+//     if (post.img && post.img.length > 0) {
+//       for (let imgUrl of post.img) {
+//         const imgId = imgUrl.split("/").pop().split(".")[0];
+//         await cloudinary.uploader.destroy(imgId);
+//       }
+//     }
+
+//     await Post.findByIdAndDelete(req.params.id);
+
+//     res.status(200).json({ message: "Post deleted successfully" });
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// };
 
 //Like unlike post
 const likeUnlikePost = async (req, res) => {
@@ -189,6 +220,62 @@ const getUserPosts = async (req, res) => {
   }
 };
 
+const repostUnrepost = async (req, res) => {
+  try {
+    const { id: postId } = req.params;
+    const userId = req.user._id;
+
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ error: "Post not found" });
+    }
+
+    const user = await User.findById(userId);
+
+    const userRepostedPost = user.reposts.includes(postId);
+
+    if (userRepostedPost) {
+      //Un-repost
+      await Post.updateOne({ _id: postId }, { $pull: { reposts: userId } });
+      await User.updateOne({ _id: userId }, { $pull: { reposts: postId } });
+
+      return res.status(200).json({ message: "Post un-reposted successfully" });
+    } else {
+      //Repost
+      await Post.updateOne({ _id: postId }, { $push: { reposts: userId } });
+      await User.updateOne({ _id: userId }, { $push: { reposts: postId } });
+
+      return res.status(200).json({ message: "Post reposted successfully" });
+    }
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+const getUserReposted = async (req, res) => {
+  const { username } = req.params;
+  try {
+    const user = await User.findOne({ username })
+      .select("reposts")
+      .populate({
+        path: "reposts",
+        select: "text img postedBy likes replies reposts createdAt",
+        populate: {
+          path: "postedBy",
+          select: "username profilePic",
+        },
+      });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.status(200).json(user.reposts);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 export {
   createPost,
   getPost,
@@ -197,4 +284,6 @@ export {
   replyToPost,
   getFeedPosts,
   getUserPosts,
+  repostUnrepost,
+  getUserReposted,
 };

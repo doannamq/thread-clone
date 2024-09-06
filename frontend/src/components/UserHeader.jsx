@@ -16,11 +16,13 @@ import { useRecoilValue } from "recoil";
 import userAtom from "../../atoms/userAtom";
 import { Link as RouterLink } from "react-router-dom";
 import useFollowUnfollow from "../hooks/useFollowUnfollow";
+import { useState } from "react";
 
-const UserHeader = ({ user }) => {
+const UserHeader = ({ user, onTabChange }) => {
   const toast = useToast();
   const currentUser = useRecoilValue(userAtom); //logged in user
   const { handleFollowUnfollow, following, updating } = useFollowUnfollow(user);
+  const [activeTab, setActiveTab] = useState("threads");
 
   const copyURL = () => {
     const currentURL = window.location.href;
@@ -33,6 +35,11 @@ const UserHeader = ({ user }) => {
         isClosable: true,
       });
     });
+  };
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    onTabChange(tab);
   };
 
   const bgHover = useColorModeValue("gray.300", "gray.600");
@@ -64,7 +71,7 @@ const UserHeader = ({ user }) => {
         <Box>
           {user.profilePic && (
             <Avatar
-              name={user.name}
+              // name={user.name}
               src={user.profilePic}
               size={{
                 base: "md",
@@ -75,8 +82,6 @@ const UserHeader = ({ user }) => {
 
           {!user.profilePic && (
             <Avatar
-              // name={user.name}
-              // src="https://bit.ly/broken-link"
               size={{
                 base: "md",
                 md: "xl",
@@ -136,22 +141,37 @@ const UserHeader = ({ user }) => {
       <Flex w={"full"}>
         <Flex
           flex={1}
-          borderBottom={"1.5px solid white"}
+          borderBottom={
+            activeTab === "threads" ? "1.5px solid white" : "1px solid gray"
+          }
           justifyContent={"center"}
           pb={3}
           cursor={"pointer"}
+          onClick={() => handleTabChange("threads")}
         >
-          <Text fontWeight={"bold"}>Threads</Text>
+          <Text
+            fontWeight={"bold"}
+            color={activeTab === "threads" ? "white" : "gray.light"}
+          >
+            Threads
+          </Text>
         </Flex>
         <Flex
           flex={1}
-          borderBottom={"1px solid gray"}
+          borderBottom={
+            activeTab === "reposts" ? "1.5px solid white" : "1px solid gray"
+          }
           justifyContent={"center"}
-          color={"gray.light"}
           pb={3}
           cursor={"pointer"}
+          onClick={() => handleTabChange("reposts")}
         >
-          <Text fontWeight={"bold"}>Replies</Text>
+          <Text
+            fontWeight={"bold"}
+            color={activeTab === "reposts" ? "white" : "gray.light"}
+          >
+            Reposts
+          </Text>
         </Flex>
       </Flex>
     </VStack>

@@ -21,7 +21,7 @@ import userAtom from "../../atoms/userAtom";
 import { DeleteIcon } from "@chakra-ui/icons";
 import postsAtom from "../../atoms/postsAtom";
 import useResizeImage from "../hooks/useResizeImage";
-import ImageModal from "../components/ImageModal"; // Import modal component
+import ImageModal from "../components/ImageModal";
 
 const PostPage = () => {
   const { user, loading } = useGetUserProfile();

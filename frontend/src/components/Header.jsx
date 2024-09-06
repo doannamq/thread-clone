@@ -46,7 +46,6 @@ const Header = () => {
   const setAuthScreen = useSetRecoilState(authScreenAtom);
   const bg = useColorModeValue("light", "black");
   const iconColor = colorMode === "light" ? "black" : "white";
-  ////////////////////////////
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [postText, setPostText] = useState("");
   const { handleImageChange, imgUrl, setImgUrl } = usePreviewImg();
@@ -109,7 +108,7 @@ const Header = () => {
       top={{ base: "auto", md: 0 }}
       bottom={{ base: 0, md: "auto" }}
       left={{ base: 0, md: 0 }}
-      width={{ base: "100%", md: "50px" }}
+      width={{ base: "100%", md: "50px", lg: "150px" }}
       height={{ base: "50px", md: "100vh" }}
       bg={bg}
       color="white"
@@ -140,26 +139,55 @@ const Header = () => {
           <Flex
             flexDirection={{ base: "row", md: "column" }}
             justifyContent={"space-between"}
-            alignItems={"center"}
             h={"40%"}
             w={"full"}
-            px={{ base: "10px", md: "0px" }}
+            alignItems={"center"}
+            px={{ base: "10px", md: "10px" }}
           >
-            <Link as={RouterLink} to="/">
-              <AiFillHome size={24} color={iconColor} />
-            </Link>
-            <Link as={RouterLink} to="/search">
-              <IoSearch size={24} color={iconColor} />
-            </Link>
-            <Link
-              as={RouterLink}
-              bg={useColorModeValue("gray.300", "gray.500")}
-              px={2}
-              py={1}
-              borderRadius={"md"}
+            <Box as={RouterLink} to="/">
+              <Flex gap={2} alignItems={"center"}>
+                <AiFillHome size={24} color={iconColor} />
+                <Text
+                  display={{ base: "none", md: "none", lg: "block" }}
+                  color={iconColor}
+                >
+                  Home
+                </Text>
+              </Flex>
+            </Box>
+            <Box as={RouterLink} to="/search">
+              <Flex gap={2} alignItems={"center"}>
+                <IoSearch size={24} color={iconColor} />
+                <Text
+                  display={{ base: "none", md: "none", lg: "block" }}
+                  color={iconColor}
+                >
+                  Search
+                </Text>
+              </Flex>
+            </Box>
+            <Flex
+              gap={{ base: 0, md: 2 }}
+              alignItems={"center"}
+              onClick={onOpen}
+              cursor={"pointer"}
             >
-              <IoAddSharp size={24} color={iconColor} onClick={onOpen} />
-            </Link>
+              <Box
+                as={RouterLink}
+                bg={useColorModeValue("gray.300", "gray.500")}
+                px={2}
+                py={1}
+                borderRadius={"md"}
+              >
+                <IoAddSharp size={24} color={iconColor} />
+              </Box>
+              <Text
+                display={{ base: "none", md: "none", lg: "block" }}
+                color={iconColor}
+              >
+                Create
+              </Text>
+            </Flex>
             <Modal isOpen={isOpen} onClose={onClose} isCentered>
               <ModalOverlay />
               <ModalContent>
@@ -224,12 +252,28 @@ const Header = () => {
                 </ModalFooter>
               </ModalContent>
             </Modal>
-            <Link as={RouterLink} to={`/${user.username}`}>
-              <FaUser size={24} color={iconColor} />
-            </Link>
-            <Link as={RouterLink} to={`/chat`}>
-              <IoChatbubble size={20} color={iconColor} />
-            </Link>
+            <Box as={RouterLink} to={`/chat`}>
+              <Flex gap={2} alignItems={"center"}>
+                <IoChatbubble size={20} color={iconColor} />
+                <Text
+                  display={{ base: "none", md: "none", lg: "block" }}
+                  color={iconColor}
+                >
+                  Message
+                </Text>
+              </Flex>
+            </Box>
+            <Box as={RouterLink} to={`/${user.username}`}>
+              <Flex gap={2} alignItems={"center"}>
+                <FaUser size={24} color={iconColor} />
+                <Text
+                  display={{ base: "none", md: "none", lg: "block" }}
+                  color={iconColor}
+                >
+                  Profile
+                </Text>
+              </Flex>
+            </Box>
           </Flex>
         )}
 
@@ -241,9 +285,17 @@ const Header = () => {
             mt={{ base: "5px", md: "0px" }}
             mr={{ base: "5px", md: "0px" }}
           >
-            <Link as={RouterLink} to={`/settings`}>
-              <MdOutlineSettings size={20} color={iconColor} />
-            </Link>
+            <Box as={RouterLink} to={`/settings`}>
+              <Flex alignItems={"center"} gap={2}>
+                <MdOutlineSettings size={20} color={iconColor} />
+                <Text
+                  display={{ base: "none", md: "none", lg: "block" }}
+                  color={iconColor}
+                >
+                  Setting
+                </Text>
+              </Flex>
+            </Box>
           </Box>
         )}
       </Flex>

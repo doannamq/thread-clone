@@ -21,7 +21,7 @@ const useGetUserProfile = () => {
           setUser(null);
           return;
         }
-        console.log(data);
+        // console.log(data);
         setUser(data);
       } catch (error) {
         showToast("Error", error.message, "error");

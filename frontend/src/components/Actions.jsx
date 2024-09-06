@@ -17,6 +17,7 @@ import {
   useColorModeValue,
   useDisclosure,
   Avatar,
+  SkeletonCircle,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
@@ -24,14 +25,18 @@ import userAtom from "../../atoms/userAtom";
 import useShowToast from "../hooks/useShowToast";
 import postsAtom from "../../atoms/postsAtom";
 import useResizeImage from "../hooks/useResizeImage";
+import { BiRepost } from "react-icons/bi";
+import { FaCircleNotch, FaRegCheckCircle } from "react-icons/fa";
 
 const Actions = ({ post, postUser }) => {
   const user = useRecoilValue(userAtom);
   const showToast = useShowToast();
   const [reply, setReply] = useState("");
   const [liked, setLiked] = useState(post.likes.includes(user?._id));
+  const [reposted, setReposted] = useState(post.reposts.includes(user?._id));
   const [posts, setPosts] = useRecoilState(postsAtom);
   const [isLiking, setIsLiking] = useState(false);
+  const [isReposting, setIsReposting] = useState(false);
   const [isReplying, setIsReplying] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { imgSize, handleImageLoad } = useResizeImage(800, 500);
@@ -116,6 +121,57 @@ const Actions = ({ post, postUser }) => {
     }
   };
 
+  const handleRepostUnrepost = async () => {
+    if (!user) {
+      return showToast(
+        "Error",
+        "You must be logged in to like a post",
+        "error"
+      );
+    }
+    if (isReposting) return;
+    setIsReposting(true);
+    try {
+      const res = await fetch("/api/posts/repost/" + post._id, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await res.json();
+      if (data.error) return showToast("Error", data.error, "error");
+
+      if (!reposted) {
+        const updatedPosts = posts.map((p) => {
+          if (p._id === post._id) {
+            return { ...p, reposts: [...p.reposts, user._id] };
+          }
+          return p;
+        });
+
+        if (data.message) {
+          showToast("Succes", data.message, "success");
+        }
+        setPosts(updatedPosts);
+      } else {
+        const updatedPosts = posts.map((p) => {
+          if (p._id === post._id) {
+            return { ...p, reposts: p.reposts.filter((id) => id !== user._id) };
+          }
+          return p;
+        });
+        if (data.message) {
+          showToast("Succes", data.message, "success");
+        }
+        setPosts(updatedPosts);
+      }
+      setReposted(!reposted);
+    } catch (error) {
+      showToast("Error", error.message, "error");
+    } finally {
+      setIsReposting(false);
+    }
+  };
   return (
     <Flex flexDirection={"column"}>
       <Flex gap={3} my={2} onClick={(e) => e.preventDefault()}>
@@ -128,6 +184,7 @@ const Actions = ({ post, postUser }) => {
           borderRadius={"full"}
           _hover={{ bg: useColorModeValue("gray.200", "gray.700") }}
           transition="background-color 0.3s ease"
+          cursor={"pointer"}
         >
           <svg
             aria-label="Like"
@@ -137,7 +194,6 @@ const Actions = ({ post, postUser }) => {
             role="img"
             viewBox="0 0 24 22"
             width="20"
-            cursor={"pointer"}
           >
             <path
               d="M1 7.66c0 4.575 3.899 9.086 9.987 12.934.338.203.74.406 1.013.406.283 0 .686-.203 1.013-.406C19.1 16.746 23 12.234 23 7.66 23 3.736 20.245 1 16.672 1 14.603 1 12.98 1.94 12 3.352 11.042 1.952 9.408 1 7.328 1 3.766 1 1 3.736 1 7.66Z"
@@ -159,6 +215,7 @@ const Actions = ({ post, postUser }) => {
           borderRadius={"full"}
           _hover={{ bg: useColorModeValue("gray.200", "gray.700") }}
           transition="background-color 0.3s ease"
+          cursor={"pointer"}
         >
           <svg
             aria-label="Comment"
@@ -168,7 +225,6 @@ const Actions = ({ post, postUser }) => {
             role="img"
             viewBox="0 0 24 24"
             width="20"
-            cursor={"pointer"}
           >
             <title>Comment</title>
             <path
@@ -189,9 +245,12 @@ const Actions = ({ post, postUser }) => {
           borderRadius={"full"}
           _hover={{ bg: useColorModeValue("gray.200", "gray.700") }}
           transition="background-color 0.3s ease"
+          cursor={"pointer"}
+          onClick={handleRepostUnrepost}
+          alignItems={"center"}
         >
-          <RepostSVG />
-          <Text fontSize={"sm"}>{post.replies.length}</Text>
+          {reposted ? <FaRegCheckCircle size={20} /> : <RepostSVG />}
+          <Text fontSize={"sm"}>{post.reposts.length}</Text>
         </Flex>
 
         <Flex
@@ -201,21 +260,13 @@ const Actions = ({ post, postUser }) => {
           borderRadius={"full"}
           _hover={{ bg: useColorModeValue("gray.200", "gray.700") }}
           transition="background-color 0.3s ease"
+          cursor={"pointer"}
+          alignItems={"center"}
         >
           <ShareSVG />
           <Text fontSize={"sm"}>{post.replies.length}</Text>
         </Flex>
       </Flex>
-
-      {/* <Flex gap={2} alignItems={"center"}>
-        <Text color={"gray.light"} fontSize={"sm"}>
-          {post.replies.length} replies
-        </Text>
-        <Box w={0.5} h={0.5} borderRadius={"full"} bg={"gray.light"}></Box>
-        <Text color={"gray.light"} fontSize={"sm"}>
-          {post.likes.length} likes
-        </Text>
-      </Flex> */}
 
       <Modal isOpen={isOpen} onClose={onClose} isCentered>
         <ModalOverlay />
@@ -285,7 +336,6 @@ const RepostSVG = () => {
       role="img"
       viewBox="0 0 24 24"
       width="20"
-      cursor={"pointer"}
     >
       <title>Repost</title>
       <path
@@ -306,7 +356,6 @@ const ShareSVG = () => {
       role="img"
       viewBox="0 0 24 24"
       width="20"
-      cursor={"pointer"}
     >
       <title>Share</title>
       <line

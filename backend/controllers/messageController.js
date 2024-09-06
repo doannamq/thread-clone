@@ -80,6 +80,42 @@ async function getMessages(req, res) {
     res.status(500).json({ error: error.message });
   }
 }
+// async function getMessages(req, res) {
+//   const { otherUserId } = req.params;
+//   const userId = req.user._id;
+//   const page = parseInt(req.query.page) || 1;
+//   const limit = parseInt(req.query.limit) || 10;
+
+//   try {
+//     const conversation = await Conversation.findOne({
+//       participants: { $all: [userId, otherUserId] },
+//     });
+
+//     if (!conversation) {
+//       return res.status(404).json({ error: "Conversation not found" });
+//     }
+
+//     const totalMessages = await Message.countDocuments({
+//       conversationId: conversation._id,
+//     });
+
+//     const messages = await Message.find({
+//       conversationId: conversation._id,
+//     })
+//       .sort({ createdAt: -1 })
+//       .skip((page - 1) * limit)
+//       .limit(limit);
+
+//     res.status(200).json({
+//       messages: messages.reverse(),
+//       currentPage: page,
+//       totalPages: Math.ceil(totalMessages / limit),
+//       hasMore: page * limit < totalMessages,
+//     });
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// }
 
 async function getConversations(req, res) {
   const userId = req.user._id;

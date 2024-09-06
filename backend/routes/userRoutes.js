@@ -27,5 +27,4 @@ router.post("/logout", logoutUser);
 router.post("/follow/:id", protectRoute, followUnFollowUser);
 router.put("/update/:id", protectRoute, updateUser);
 router.put("/freeze", protectRoute, freezeAccount);
-
 export default router;

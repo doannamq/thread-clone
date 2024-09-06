@@ -281,7 +281,16 @@ const searchUsers = async (req, res) => {
 
 const searchSuggestedUser = async (req, res) => {
   try {
-    const mostFollowedUsers = await User.find()
+    const userId = req.user._id;
+    const user = await User.find(userId);
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const usersFollowedByYou = await User.findById(userId).select("following");
+    const mostFollowedUsers = await User.find({
+      _id: { $nin: usersFollowedByYou.following },
+    })
       .sort({ followersCount: -1 })
       .limit(10);
 

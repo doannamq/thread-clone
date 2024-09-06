@@ -1,7 +1,8 @@
-import { Box, Button, Text } from "@chakra-ui/react";
+import { Box, Button, Flex, Text, useColorModeValue } from "@chakra-ui/react";
 import useShowToast from "../hooks/useShowToast";
 import useLogout from "../hooks/useLogout";
 import { FiLogOut } from "react-icons/fi";
+import { Link } from "react-router-dom";
 
 export const SettingsPage = () => {
   const showToast = useShowToast();
@@ -32,17 +33,33 @@ export const SettingsPage = () => {
   };
 
   return (
-    <Box mt={"50px"}>
-      <Text my={1} fontWeight={"bold"}>
-        Freeze Your Account
-      </Text>
-      <Text my={1}>You can unfreeze your account anytime by logging in.</Text>
-      <Button size={"sm"} colorScheme="red" onClick={freezeAccount}>
-        Freeze
-      </Button>
-      <Button size={"xs"} onClick={logout}>
-        <FiLogOut size={20} />
-      </Button>
-    </Box>
+    <Flex flexDirection={"column"}>
+      <Box mt={"50px"}>
+        <Text my={1} fontWeight={"bold"}>
+          Freeze Your Account
+        </Text>
+        <Text my={1}>You can unfreeze your account anytime by logging in.</Text>
+        <Button size={"sm"} colorScheme="red" onClick={freezeAccount}>
+          Freeze
+        </Button>
+      </Box>
+      <Link to="/update">
+        <Button
+          mt={5}
+          size={"sm"}
+          bg={useColorModeValue("gray.300", "gray.700")}
+        >
+          Update Profile
+        </Button>
+      </Link>
+      <Box>
+        <Button size={"xs"} onClick={logout} mt={5} py={5} px={5}>
+          <FiLogOut size={20} />
+          <Text ml={2} fontSize={"sm"}>
+            Logout
+          </Text>
+        </Button>
+      </Box>
+    </Flex>
   );
 };

@@ -16,7 +16,6 @@ import { BsThreeDots } from "react-icons/bs";
 import { Link, useNavigate } from "react-router-dom";
 import Actions from "./Actions";
 import { useEffect, useState } from "react";
-import { CgMoreO } from "react-icons/cg";
 import useShowToast from "../hooks/useShowToast";
 import { formatDistanceToNow } from "date-fns";
 import { DeleteIcon } from "@chakra-ui/icons";
@@ -96,132 +95,136 @@ const Post = ({ post, postedBy }) => {
   if (!user) return null;
 
   return (
-    <Link to={`/${user.username}/post/${post._id}`}>
-      <Flex gap={3} mb={4} py={5}>
-        <Flex flexDirection={"column"} alignItems={"center"}>
-          <Avatar
-            size={"md"}
-            name={user.name}
-            src={user?.profilePic}
-            onClick={(e) => {
-              e.preventDefault();
-              navigate(`/${user.username}`);
-            }}
-          />
-          <Box w={"1px"} h={"full"} bg={"gray.light"} my={2}></Box>
-          <Box position={"relative"} w={"full"}>
-            {post.replies.length === 0 && <Text textAlign={"center"}>🥱</Text>}
-            {post.replies[0] && (
-              <Avatar
-                size="xs"
-                name={post.replies[0].name}
-                src={post.replies[0].userProfilePic}
-                position={"absolute"}
-                top={"0px"}
-                left="15px"
-                padding={"2px"}
-              />
-            )}
-
-            {post.replies[1] && (
-              <Avatar
-                size="xs"
-                name={post.replies[1].name}
-                src={post.replies[1].userProfilePic}
-                position={"absolute"}
-                bottom={"0px"}
-                right="-5px"
-                padding={"2px"}
-              />
-            )}
-
-            {post.replies[2] && (
-              <Avatar
-                size="xs"
-                name={post.replies[2].name}
-                src={post.replies[2].userProfilePic}
-                position={"absolute"}
-                bottom={"0px"}
-                left="4px"
-                padding={"2px"}
-              />
-            )}
-          </Box>
-        </Flex>
-        <Flex flex={1} flexDirection={"column"} gap={2}>
-          <Flex justifyContent={"space-between"} w={"full"}>
-            <Flex w={"full"} alignItems={"center"}>
-              <Text
-                fontSize={"sm"}
-                fontWeight={"bold"}
-                onClick={(e) => {
-                  e.preventDefault();
-                  navigate(`/${user.username}`);
-                }}
-              >
-                {user?.username}
-              </Text>
-              <Image src="/verified.png" w={4} h={4} ml={1} />
-            </Flex>
-            <Flex gap={4} alignItems={"center"}>
-              <Text
-                fontSize={"xs"}
-                width={36}
-                textAlign={"right"}
-                color={"gray.light"}
-              >
-                {formatDistanceToNow(new Date(post.createdAt))} ago
-              </Text>
-
-              {currentUser?._id === user._id && (
-                <DeleteIcon size={20} onClick={handleDeletePost} />
+    <Box>
+      <Link to={`/${user.username}/post/${post._id}`}>
+        <Flex gap={3} mb={4} py={5}>
+          <Flex flexDirection={"column"} alignItems={"center"}>
+            <Avatar
+              size={"md"}
+              name={user.name}
+              src={user?.profilePic}
+              onClick={(e) => {
+                e.preventDefault();
+                navigate(`/${user.username}`);
+              }}
+            />
+            <Box w={"1px"} h={"full"} bg={"gray.light"} my={2}></Box>
+            <Box position={"relative"} w={"full"}>
+              {post.replies.length === 0 && (
+                <Text textAlign={"center"}>🥱</Text>
               )}
-              <Box
-                className="icon-container"
-                display="flex"
-                justifyContent="center"
-                alignItems="center"
-                onClick={handleMenuClick}
-                _hover={{ bg: bgHover }}
-              >
-                <Menu>
-                  <MenuButton>
-                    <BsThreeDots cursor={"pointer"} />
-                  </MenuButton>
-                  <Portal>
-                    <MenuList bg={useColorModeValue("gray.200", "gray.dark")}>
-                      <MenuItem
-                        bg={useColorModeValue("gray.200", "gray.dark")}
-                        onClick={copyURL}
-                      >
-                        Copy Link
-                      </MenuItem>
-                    </MenuList>
-                  </Portal>
-                </Menu>
+              {post.replies[0] && (
+                <Avatar
+                  size="xs"
+                  name={post.replies[0].name}
+                  src={post.replies[0].userProfilePic}
+                  position={"absolute"}
+                  top={"0px"}
+                  left="15px"
+                  padding={"2px"}
+                />
+              )}
+
+              {post.replies[1] && (
+                <Avatar
+                  size="xs"
+                  name={post.replies[1].name}
+                  src={post.replies[1].userProfilePic}
+                  position={"absolute"}
+                  bottom={"0px"}
+                  right="-5px"
+                  padding={"2px"}
+                />
+              )}
+
+              {post.replies[2] && (
+                <Avatar
+                  size="xs"
+                  name={post.replies[2].name}
+                  src={post.replies[2].userProfilePic}
+                  position={"absolute"}
+                  bottom={"0px"}
+                  left="4px"
+                  padding={"2px"}
+                />
+              )}
+            </Box>
+          </Flex>
+          <Flex flex={1} flexDirection={"column"} gap={2}>
+            <Flex justifyContent={"space-between"} w={"full"}>
+              <Flex w={"full"} alignItems={"center"}>
+                <Text
+                  fontSize={"sm"}
+                  fontWeight={"bold"}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    navigate(`/${user.username}`);
+                  }}
+                >
+                  {user?.username}
+                </Text>
+                <Image src="/verified.png" w={4} h={4} ml={1} />
+              </Flex>
+              <Flex gap={4} alignItems={"center"}>
+                <Text
+                  fontSize={"xs"}
+                  width={36}
+                  textAlign={"right"}
+                  color={"gray.light"}
+                >
+                  {formatDistanceToNow(new Date(post.createdAt))} ago
+                </Text>
+
+                {currentUser?._id === user._id && (
+                  <DeleteIcon size={20} onClick={handleDeletePost} />
+                )}
+                <Box
+                  className="icon-container"
+                  display="flex"
+                  justifyContent="center"
+                  alignItems="center"
+                  onClick={handleMenuClick}
+                  _hover={{ bg: bgHover }}
+                >
+                  <Menu>
+                    <MenuButton>
+                      <BsThreeDots cursor={"pointer"} />
+                    </MenuButton>
+                    <Portal>
+                      <MenuList bg={useColorModeValue("gray.200", "gray.dark")}>
+                        <MenuItem
+                          bg={useColorModeValue("gray.200", "gray.dark")}
+                          onClick={copyURL}
+                        >
+                          Copy Link
+                        </MenuItem>
+                      </MenuList>
+                    </Portal>
+                  </Menu>
+                </Box>
+              </Flex>
+            </Flex>
+
+            <Text fontSize={"sm"}>{post.text}</Text>
+            {post.img && (
+              <Box overflow={"hidden"}>
+                <Image
+                  src={post.img}
+                  // w={"full"}
+                  onLoad={handleImageLoad}
+                  style={{ width: imgSize.width, height: imgSize.height }}
+                  borderRadius={6}
+                />
               </Box>
+            )}
+            <Flex gap={3} my={1}>
+              <Actions post={post} postUser={user} />
             </Flex>
           </Flex>
-
-          <Text fontSize={"sm"}>{post.text}</Text>
-          {post.img && (
-            <Box overflow={"hidden"}>
-              <Image
-                src={post.img}
-                // w={"full"}
-                onLoad={handleImageLoad}
-                style={{ width: imgSize.width, height: imgSize.height }}
-                borderRadius={6}
-              />
-            </Box>
-          )}
-          <Flex gap={3} my={1}>
-            <Actions post={post} postUser={user} />
-          </Flex>
         </Flex>
-      </Flex>
-      <Box h={"0.5px"} w={"full"} bg={"gray.light"}></Box>
-    </Link>
+        <Box h={"0.5px"} w={"full"} bg={"gray.light"}></Box>
+      </Link>
+    </Box>
   );
 };
 
