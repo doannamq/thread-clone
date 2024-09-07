@@ -47,7 +47,7 @@ const UserPage = () => {
         const res = await fetch(`/api/posts/user/reposts/${username}`);
         const data = await res.json();
         console.log(data);
-        setReposts(data);
+        setReposts(data.reverse());
       } catch (error) {
         showToast("Error", error.message, "error");
         setReposts([]);

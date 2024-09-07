@@ -90,9 +90,9 @@ const Header = () => {
       }
 
       showToast("Success", "Post created successfully", "success");
-      if (username === user.username) {
-        setPosts([data, ...posts]);
-      }
+
+      setPosts((prevPosts) => [data, ...prevPosts]);
+
       onClose();
       setPostText("");
       setImgUrl("");
@@ -102,6 +102,7 @@ const Header = () => {
       setLoading(false);
     }
   };
+
   return (
     <Box
       position={{ base: "fixed", md: "fixed" }}

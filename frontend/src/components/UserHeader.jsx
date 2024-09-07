@@ -9,6 +9,13 @@ import {
   useToast,
   Button,
   useColorModeValue,
+  Modal,
+  ModalOverlay,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  useDisclosure,
+  ModalContent,
 } from "@chakra-ui/react";
 import { BsInstagram } from "react-icons/bs";
 import { CgMoreO } from "react-icons/cg";
@@ -17,12 +24,17 @@ import userAtom from "../../atoms/userAtom";
 import { Link as RouterLink } from "react-router-dom";
 import useFollowUnfollow from "../hooks/useFollowUnfollow";
 import { useState } from "react";
+import QRCode from "react-qr-code";
 
 const UserHeader = ({ user, onTabChange }) => {
   const toast = useToast();
-  const currentUser = useRecoilValue(userAtom); //logged in user
+  const currentUser = useRecoilValue(userAtom);
   const { handleFollowUnfollow, following, updating } = useFollowUnfollow(user);
   const [activeTab, setActiveTab] = useState("threads");
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const currentURL = window.location.href;
+  console.log(currentURL);
 
   const copyURL = () => {
     const currentURL = window.location.href;
@@ -67,7 +79,31 @@ const UserHeader = ({ user, onTabChange }) => {
               thread.net
             </Text>
           </Flex>
+          <Text
+            fontSize={"sm"}
+            color={useColorModeValue("gray.800", "gray.400")}
+            cursor={"pointer"}
+            onClick={onOpen}
+          >
+            QR Code
+          </Text>
+          <Modal isOpen={isOpen} onClose={onClose} isCentered>
+            <ModalOverlay />
+            <ModalContent>
+              <ModalHeader></ModalHeader>
+              <ModalCloseButton />
+              <ModalBody
+                pb={6}
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+              >
+                <QRCode value={currentURL} size={250} />
+              </ModalBody>
+            </ModalContent>
+          </Modal>
         </Box>
+
         <Box>
           {user.profilePic && (
             <Avatar

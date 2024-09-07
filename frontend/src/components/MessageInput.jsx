@@ -119,6 +119,7 @@ const MessageInput = ({ setMessages }) => {
           onClose();
           setImgUrl("");
         }}
+        isCentered={true}
       >
         <ModalOverlay />
         <ModalContent>
