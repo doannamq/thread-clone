@@ -17,7 +17,6 @@ import {
   useColorModeValue,
   useDisclosure,
   Avatar,
-  SkeletonCircle,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { useRecoilState, useRecoilValue } from "recoil";
@@ -25,8 +24,8 @@ import userAtom from "../../atoms/userAtom";
 import useShowToast from "../hooks/useShowToast";
 import postsAtom from "../../atoms/postsAtom";
 import useResizeImage from "../hooks/useResizeImage";
-import { BiRepost } from "react-icons/bi";
-import { FaCircleNotch, FaRegCheckCircle } from "react-icons/fa";
+
+import { FaRegCheckCircle } from "react-icons/fa";
 
 const Actions = ({ post, postUser }) => {
   const user = useRecoilValue(userAtom);

@@ -42,10 +42,28 @@ io.on("connection", (socket) => {
     }
   });
 
+  //video call
+  socket.emit("me", socket.id);
+
   socket.on("disconnect", () => {
     console.log("user disconnected");
     delete userSocketMap[userId];
     io.emit("getOnlineUsers", Object.keys(userSocketMap));
+    //end call
+    socket.broadcast.emit("callEnded");
+  });
+
+  //contiue video call
+  socket.on("callUser", (data) => {
+    io.to(data.userToCall).emit("callUser", {
+      signal: data.signalData,
+      from: data.from,
+      name: data.name,
+    });
+  });
+
+  socket.on("answerCall", (data) => {
+    io.to(data.to).emit("callAccepted", data.signal);
   });
 });
 

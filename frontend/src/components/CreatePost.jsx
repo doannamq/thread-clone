@@ -1,5 +1,6 @@
 import { AddIcon } from "@chakra-ui/icons";
 import {
+  Box,
   Button,
   CloseButton,
   Flex,
@@ -137,17 +138,20 @@ const CreatePost = () => {
             </FormControl>
 
             {imgUrl && (
-              <Flex mt={5} w={"full"} position={"relative"}>
-                <Image src={imgUrl} alt="Selected img" />
-                <CloseButton
-                  onClick={() => {
-                    setImgUrl("");
-                  }}
-                  bg={"gray.800"}
-                  position={"absolute"}
-                  top={2}
-                  right={2}
-                />
+              <Flex mt={5} w={"full"}>
+                <Box position={"relative"}>
+                  <Image src={imgUrl} alt="Selected img" />
+                  <CloseButton
+                    onClick={() => {
+                      setImgUrl("");
+                    }}
+                    bg={"gray.800"}
+                    position={"absolute"}
+                    top={1}
+                    right={1}
+                    size={"sm"}
+                  />
+                </Box>
               </Flex>
             )}
           </ModalBody>

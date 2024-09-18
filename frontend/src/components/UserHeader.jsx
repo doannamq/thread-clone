@@ -34,7 +34,6 @@ const UserHeader = ({ user, onTabChange }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const currentURL = window.location.href;
-  console.log(currentURL);
 
   const copyURL = () => {
     const currentURL = window.location.href;

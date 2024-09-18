@@ -12,6 +12,8 @@ import CreatePost from "./components/CreatePost";
 import ChatPage from "./pages/ChatPage";
 import { SettingsPage } from "./pages/SettingsPage";
 import SearchUserPage from "./pages/SearchUsersPage";
+import RoomPage from "./pages/RoomPage";
+import VideoCallPage from "./pages/VideoCallPage";
 
 function App() {
   const user = useRecoilValue(userAtom);
@@ -67,6 +69,8 @@ function App() {
               element={user ? <SettingsPage /> : <Navigate to={"/auth"} />}
             />
             <Route path="/search" element={<SearchUserPage />} />
+            <Route path="/room/:roomId" element={<RoomPage />} />
+            <Route path="/video" element={<VideoCallPage />} />
           </Routes>
         </Container>
       </Box>

@@ -186,7 +186,6 @@ const getFeedPosts = async (req, res) => {
 
     const following = user.following;
 
-    // Pagination
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 3;
     const skip = (page - 1) * limit;
