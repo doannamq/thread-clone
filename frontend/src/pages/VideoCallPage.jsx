@@ -15,7 +15,8 @@ import { useRecoilState } from "recoil";
 import userAtom from "../../atoms/userAtom";
 import { selectedConversationAtom } from "../../atoms/messagesAtom";
 
-const socket = io.connect("http://localhost:5000");
+// const socket = io.connect("http://localhost:5000");
+const socket = io.connect("https://phuong-nam.onrender.com/");
 
 function VideoCallPage() {
   const [me, setMe] = useState("");
