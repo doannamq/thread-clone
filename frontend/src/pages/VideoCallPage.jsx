@@ -15,8 +15,8 @@ import { useRecoilState } from "recoil";
 import userAtom from "../../atoms/userAtom";
 import { selectedConversationAtom } from "../../atoms/messagesAtom";
 
-// const socket = io.connect("http://localhost:5000");
-const socket = io.connect("https://phuong-nam.onrender.com/");
+const socket = io.connect("http://localhost:5000");
+// const socket = io.connect("https://phuong-nam.onrender.com/");
 
 function VideoCallPage() {
   const [me, setMe] = useState("");
@@ -33,6 +33,9 @@ function VideoCallPage() {
   const connectionRef = useRef();
   const toast = useToast();
 
+  const [user] = useRecoilState(userAtom);
+  const [selectedConversation] = useRecoilState(selectedConversationAtom);
+
   useEffect(() => {
     navigator.mediaDevices
       .getUserMedia({ video: true, audio: true })
@@ -41,21 +44,38 @@ function VideoCallPage() {
         if (myVideo.current) {
           myVideo.current.srcObject = stream;
         }
-      })
-      .catch((err) => {
-        console.log(err);
       });
 
-    socket.on("me", (id) => {
-      setMe(id);
+    socket.on("callUser", ({ from, name: callerName, signal }) => {
+      setReceivingCall(true);
+      setCaller(from);
+      setName(callerName);
+      setCallerSignal(signal);
+    });
+    const peer = new Peer({
+      initiator: false,
+      trickle: false,
+      stream: stream,
     });
 
-    socket.on("callUser", (data) => {
-      setReceivingCall(true);
-      setCaller(data.from);
-      setName(data.name);
-      setCallerSignal(data.signal);
+    socket.on("callAccepted", (signal) => {
+      setCallAccepted(true);
+      peer.signal(signal);
     });
+
+    socket.on("callEnded", () => {
+      setCallEnded(true);
+      if (connectionRef.current) {
+        connectionRef.current.destroy();
+      }
+      window.location.reload();
+    });
+
+    return () => {
+      socket.off("callUser");
+      socket.off("callAccepted");
+      socket.off("callEnded");
+    };
   }, []);
 
   useEffect(() => {
@@ -70,17 +90,20 @@ function VideoCallPage() {
       trickle: false,
       stream: stream,
     });
+
     peer.on("signal", (data) => {
       socket.emit("callUser", {
         userToCall: id,
         signalData: data,
-        from: me,
-        name: name,
+        from: user._id,
+        name: user.username,
       });
     });
+
     peer.on("stream", (stream) => {
       userVideo.current.srcObject = stream;
     });
+
     socket.on("callAccepted", (signal) => {
       setCallAccepted(true);
       peer.signal(signal);
@@ -96,9 +119,11 @@ function VideoCallPage() {
       trickle: false,
       stream: stream,
     });
+
     peer.on("signal", (data) => {
       socket.emit("answerCall", { signal: data, to: caller });
     });
+
     peer.on("stream", (stream) => {
       userVideo.current.srcObject = stream;
     });
@@ -109,93 +134,73 @@ function VideoCallPage() {
 
   const leaveCall = () => {
     setCallEnded(true);
-    connectionRef.current.destroy();
-    toast({
-      title: "Call Ended.",
-      description: "You have ended the call.",
-      status: "info",
-      duration: 3000,
-      isClosable: true,
+    if (connectionRef.current) {
+      connectionRef.current.destroy();
+    }
+    socket.emit("endCall", {
+      userId: user._id,
+      otherId: selectedConversation.userId,
     });
+    window.location.reload();
   };
 
   return (
-    <Box textAlign="center" color="#fff" p={4} bg="gray.800" minHeight="100vh">
-      <Text fontSize="4xl" mb={4}>
-        Zoomish
-      </Text>
-      <Box className="container" mt={4}>
-        <Box display="flex" justifyContent="center" mb={4}>
-          <Box className="video" m={2}>
-            {stream && (
-              <video
-                playsInline
-                muted
-                ref={myVideo}
-                autoPlay
-                style={{ width: "300px" }}
-              />
-            )}
-          </Box>
-          <Box className="video" m={2}>
-            {callAccepted && !callEnded ? (
-              <video
-                playsInline
-                ref={userVideo}
-                autoPlay
-                style={{ width: "300px" }}
-              />
-            ) : null}
-          </Box>
+    <Box className="container">
+      <Box className="video-container">
+        <Box className="video">
+          {stream && (
+            <video
+              playsInline
+              muted
+              ref={myVideo}
+              autoPlay
+              style={{ width: "300px" }}
+            />
+          )}
         </Box>
-        <Box>
-          <Input
-            placeholder="Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            mb={4}
-          />
-          <Button
-            leftIcon={<CopyIcon />}
-            colorScheme="teal"
-            mb={4}
-            onClick={() => navigator.clipboard.writeText(me)}
-          >
-            Copy ID
-          </Button>
-          <Input
-            placeholder="ID to call"
-            value={idToCall}
-            onChange={(e) => setIdToCall(e.target.value)}
-          />
-          <Box mt={4}>
-            {callAccepted && !callEnded ? (
-              <Button colorScheme="red" onClick={leaveCall}>
-                End Call
-              </Button>
-            ) : (
-              <IconButton
-                colorScheme="teal"
-                aria-label="call"
-                icon={<PhoneIcon />}
-                onClick={() => callUser(idToCall)}
-              />
-            )}
-            <Text mt={2}>{idToCall}</Text>
-          </Box>
-        </Box>
-        <Box mt={4}>
-          {receivingCall && !callAccepted ? (
-            <Box>
-              <Text fontSize="xl" mb={4}>
-                {name} is calling...
-              </Text>
-              <Button colorScheme="teal" onClick={answerCall}>
-                Answer
-              </Button>
-            </Box>
+        <Box className="video">
+          {callAccepted && !callEnded ? (
+            <video
+              playsInline
+              ref={userVideo}
+              autoPlay
+              style={{ width: "300px" }}
+            />
           ) : null}
         </Box>
+      </Box>
+      <Box className="myId">
+        <Text>Tên của bạn: {user.username}</Text>
+        <Text>ID của bạn: {user._id}</Text>
+        <Input
+          placeholder="ID để gọi"
+          value={idToCall}
+          onChange={(e) => setIdToCall(e.target.value)}
+        />
+        <Box className="call-button">
+          {callAccepted && !callEnded ? (
+            <Button colorScheme="red" onClick={leaveCall}>
+              Kết thúc cuộc gọi
+            </Button>
+          ) : (
+            <IconButton
+              colorScheme="teal"
+              aria-label="Call"
+              icon={<PhoneIcon />}
+              onClick={() => callUser(idToCall)}
+            />
+          )}
+        </Box>
+      </Box>
+      <Box>
+        {receivingCall && !callAccepted ? (
+          <Box className="caller">
+            <Text>{name} đang gọi...</Text>
+            <Button colorScheme="teal" onClick={answerCall}>
+              Trả lời
+            </Button>
+          </Box>
+        ) : null}
       </Box>
     </Box>
   );

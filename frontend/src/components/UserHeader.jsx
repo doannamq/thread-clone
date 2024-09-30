@@ -25,6 +25,8 @@ import { Link as RouterLink } from "react-router-dom";
 import useFollowUnfollow from "../hooks/useFollowUnfollow";
 import { useState } from "react";
 import QRCode from "react-qr-code";
+import Followers from "./Followers";
+import Followings from "./Followings";
 
 const UserHeader = ({ user, onTabChange }) => {
   const toast = useToast();
@@ -142,10 +144,13 @@ const UserHeader = ({ user, onTabChange }) => {
       )}
       <Flex w={"full"} justifyContent={"space-between"}>
         <Flex gap={2} alignItems={"center"}>
-          <Text color={"gray.light"} cursor={"pointer"}>
-            {user.followers.length} followers
-          </Text>
-
+          <Followers
+            followers1={user.followers}
+            userId={currentUser._id}
+            user={currentUser}
+          />
+          <Box w={1} h={1} bg={"gray.light"} borderRadius={"full"}></Box>
+          <Followings followings1={user.following} userId={currentUser._id} />
           <Box w={1} h={1} bg={"gray.light"} borderRadius={"full"}></Box>
           <Link color={"gray.light"}>instagram.com</Link>
         </Flex>

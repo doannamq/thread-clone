@@ -13,6 +13,7 @@ import useFollowUnfollow from "../hooks/useFollowUnfollow";
 
 const SearchUser = ({ user }) => {
   const { handleFollowUnfollow, following, updating } = useFollowUnfollow(user);
+
   return (
     <Box mb={"20px"}>
       <Flex

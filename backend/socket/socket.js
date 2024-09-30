@@ -42,28 +42,27 @@ io.on("connection", (socket) => {
     }
   });
 
-  //video call
-  socket.emit("me", socket.id);
+  // Xử lý cuộc gọi video
+  socket.on("callUser", ({ userToCall, signalData, from, name }) => {
+    io.to(userSocketMap[userToCall]).emit("callUser", {
+      signal: signalData,
+      from,
+      name,
+    });
+  });
+
+  socket.on("answerCall", (data) => {
+    io.to(userSocketMap[data.to]).emit("callAccepted", data.signal);
+  });
+
+  socket.on("endCall", ({ userId, otherId }) => {
+    io.to(userSocketMap[otherId]).emit("callEnded");
+  });
 
   socket.on("disconnect", () => {
     console.log("user disconnected");
     delete userSocketMap[userId];
     io.emit("getOnlineUsers", Object.keys(userSocketMap));
-    //end call
-    socket.broadcast.emit("callEnded");
-  });
-
-  //contiue video call
-  socket.on("callUser", (data) => {
-    io.to(data.userToCall).emit("callUser", {
-      signal: data.signalData,
-      from: data.from,
-      name: data.name,
-    });
-  });
-
-  socket.on("answerCall", (data) => {
-    io.to(data.to).emit("callAccepted", data.signal);
   });
 });
 

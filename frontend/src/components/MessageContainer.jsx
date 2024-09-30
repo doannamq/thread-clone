@@ -134,8 +134,9 @@ const MessageContainer = () => {
   //   window.open(`/room/${callId}`, "_blank", windowFeatures);
   // }, [callId]);
   const handleJoinRoom = useCallback(() => {
-    const windowFeatures = "width=800,height=600,resizable=yes";
-    window.open(`/video`, "_blank", windowFeatures);
+    navigate("/video", {
+      state: { userId: currentUser._id, otherId: selectedConversation.userId },
+    });
   }, []);
 
   return (

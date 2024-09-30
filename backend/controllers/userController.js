@@ -300,6 +300,33 @@ const searchSuggestedUser = async (req, res) => {
   }
 };
 
+const getFollowers = async (req, res) => {
+  try {
+    const username = req.params.username;
+    const user = await User.findOne({ username: username }).select("followers");
+    const followers = user.followers;
+    const followerDetails = await User.find({ _id: { $in: followers } }).select(
+      "username name profilePic"
+    );
+    res.status(200).json(followerDetails);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const getFollowing = async (req, res) => {
+  try {
+    const username = req.params.username;
+    const user = await User.findOne({ username: username }).select("following");
+    const following = user.following;
+    const followingDetails = await User.find({
+      _id: { $in: following },
+    }).select("username name profilePic");
+    res.status(200).json(followingDetails);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 export {
   signupUser,
   loginUser,
@@ -311,4 +338,6 @@ export {
   freezeAccount,
   searchUsers,
   searchSuggestedUser,
+  getFollowers,
+  getFollowing,
 };
