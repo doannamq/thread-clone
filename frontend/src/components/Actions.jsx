@@ -68,6 +68,18 @@ const Actions = ({ post, postUser }) => {
           return p;
         });
         setPosts(updatedPosts);
+        // Send notification when liked
+        await fetch("/api/notifications/like", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            postId: post._id,
+            senderId: user._id,
+            receiverId: post.postedBy,
+          }),
+        });
       } else {
         const updatedPosts = posts.map((p) => {
           if (p._id === post._id) {
@@ -108,6 +120,18 @@ const Actions = ({ post, postUser }) => {
           return { ...p, replies: [...p.replies, data] };
         }
         return p;
+      });
+
+      await fetch("/api/notifications/comment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          postId: post._id,
+          senderId: user._id,
+          receiverId: post.postedBy,
+        }),
       });
       setPosts(updatedPosts);
       showToast("Succes", "Reply posted successfully", "success");

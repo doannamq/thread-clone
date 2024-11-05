@@ -11,12 +11,12 @@ const postSchema = mongoose.Schema(
       type: String,
       maxLength: 500,
     },
-    img: {
-      type: String,
-    },
     // img: {
-    //   type: [String],
+    //   type: String,
     // },
+    img: {
+      type: [String],
+    },
     likes: {
       //array of user id
       type: [mongoose.Schema.Types.ObjectId],

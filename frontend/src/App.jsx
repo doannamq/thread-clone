@@ -14,6 +14,7 @@ import { SettingsPage } from "./pages/SettingsPage";
 import SearchUserPage from "./pages/SearchUsersPage";
 import RoomPage from "./pages/RoomPage";
 import VideoCallPage from "./pages/VideoCallPage";
+import Notification from "./pages/Notification";
 
 function App() {
   const user = useRecoilValue(userAtom);
@@ -71,6 +72,7 @@ function App() {
             <Route path="/search" element={<SearchUserPage />} />
             <Route path="/room/:roomId" element={<RoomPage />} />
             <Route path="/video" element={<VideoCallPage />} />
+            <Route path="/notifications" element={<Notification />} />
           </Routes>
         </Container>
       </Box>

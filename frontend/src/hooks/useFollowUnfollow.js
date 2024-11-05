@@ -38,6 +38,18 @@ const useFollowUnfollow = (user) => {
       } else {
         showToast("Success", `Followed ${user.name}`, "success");
         user.followers.push(currentUser?._id); // simulate adding to followers
+
+        //create follow notification
+        await fetch("/api/notifications/follow", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            senderId: currentUser?._id,
+            receiverId: user._id,
+          }),
+        });
       }
       setFollowing(!following);
 

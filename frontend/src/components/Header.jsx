@@ -31,6 +31,7 @@ import authScreenAtom from "../../atoms/authAtom";
 import { BsFillChatQuoteFill, BsFillImageFill } from "react-icons/bs";
 import { MdOutlineSettings } from "react-icons/md";
 import { IoAddSharp, IoChatbubble, IoSearch } from "react-icons/io5";
+import { FaBell } from "react-icons/fa";
 import { FaUser } from "react-icons/fa";
 import { useRef, useState } from "react";
 import usePreviewImg from "../hooks/usePreviewImg";
@@ -48,7 +49,7 @@ const Header = () => {
   const iconColor = colorMode === "light" ? "black" : "white";
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [postText, setPostText] = useState("");
-  const { handleImageChange, imgUrl, setImgUrl } = usePreviewImg();
+  const { handleImageChange, imgUrls, setImgUrls } = usePreviewImg();
   const imageRef = useRef(null);
   const [remainingChar, setRemainingChar] = useState(MAX_CHAR);
   const showToast = useShowToast();
@@ -79,7 +80,7 @@ const Header = () => {
         body: JSON.stringify({
           postedBy: user._id,
           text: postText,
-          img: imgUrl,
+          img: imgUrls,
         }),
       });
 
@@ -95,7 +96,7 @@ const Header = () => {
 
       onClose();
       setPostText("");
-      setImgUrl("");
+      setImgUrls([]);
       setRemainingChar(MAX_CHAR);
     } catch (error) {
       showToast("Error", error, "error");
@@ -218,6 +219,7 @@ const Header = () => {
                       hidden
                       ref={imageRef}
                       onChange={handleImageChange}
+                      multiple
                     />
                     <BsFillImageFill
                       style={{ marginLeft: "5px", cursor: "pointer" }}
@@ -226,21 +228,41 @@ const Header = () => {
                     />
                   </FormControl>
 
-                  {imgUrl && (
-                    <Flex mt={5} w={"full"}>
-                      <Box position={"relative"}>
-                        <Image src={imgUrl} alt="Selected img" />
-                        <CloseButton
-                          onClick={() => {
-                            setImgUrl("");
-                          }}
-                          bg={"gray.800"}
-                          position={"absolute"}
-                          top={1}
-                          right={1}
-                          size={"sm"}
-                        />
-                      </Box>
+                  {imgUrls.length > 0 && (
+                    <Flex
+                      mt={5}
+                      w={"full"}
+                      overflowX="auto"
+                      wrap="nowrap"
+                      className="custom-scrollbar"
+                    >
+                      {imgUrls.map((url, index) => (
+                        <Box
+                          key={index}
+                          position={"relative"}
+                          mr={3}
+                          minW="200px"
+                          maxW="200px"
+                        >
+                          <Image
+                            src={url}
+                            alt={`Selected img ${index + 1}`}
+                            boxSize="200px"
+                            height={"250px"}
+                            objectFit="cover"
+                          />
+                          <CloseButton
+                            onClick={() => {
+                              setImgUrls(imgUrls.filter((_, i) => i !== index));
+                            }}
+                            bg={"gray.800"}
+                            position={"absolute"}
+                            top={1}
+                            right={1}
+                            size={"sm"}
+                          />
+                        </Box>
+                      ))}
                     </Flex>
                   )}
                 </ModalBody>
@@ -289,7 +311,19 @@ const Header = () => {
             right={{ base: "0", md: "auto" }}
             mt={{ base: "5px", md: "0px" }}
             mr={{ base: "5px", md: "0px" }}
+            display={{ base: "flex", md: "block", lg: "block" }}
           >
+            <Box as={RouterLink} to={`/notifications`}>
+              <Flex alignItems={"center"} gap={2}>
+                <FaBell size={18} color={iconColor} />
+                <Text
+                  display={{ base: "none", md: "none", lg: "block" }}
+                  color={iconColor}
+                >
+                  Notification
+                </Text>
+              </Flex>
+            </Box>
             <Box as={RouterLink} to={`/settings`}>
               <Flex alignItems={"center"} gap={2}>
                 <MdOutlineSettings size={20} color={iconColor} />

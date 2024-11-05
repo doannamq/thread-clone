@@ -127,7 +127,7 @@ const PostPage = () => {
 
       <Text my={3}>{currentPost.text}</Text>
 
-      {currentPost.img && (
+      {currentPost.img && currentPost.img.length === 1 && (
         <Box borderRadius={6}>
           <Image
             src={currentPost.img}
@@ -137,6 +137,29 @@ const PostPage = () => {
             onClick={() => openImageModal(currentPost.img)}
             cursor="pointer"
           />
+        </Box>
+      )}
+
+      {currentPost.img && currentPost.img.length > 1 && (
+        <Box borderRadius={6}>
+          <Flex
+            overflowX="auto"
+            wrap="nowrap"
+            gap={2}
+            className="custom-scrollbar"
+          >
+            {currentPost.img.map((imgSrc, index) => (
+              <Image
+                key={index}
+                src={imgSrc}
+                w={"full"}
+                style={{ width: imgSize.width, height: imgSize.height }}
+                borderRadius={6}
+                onClick={() => openImageModal(imgSrc)}
+                cursor="pointer"
+              />
+            ))}
+          </Flex>
         </Box>
       )}
 

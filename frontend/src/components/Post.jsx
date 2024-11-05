@@ -23,6 +23,7 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import userAtom from "../../atoms/userAtom";
 import postsAtom from "../../atoms/postsAtom";
 import useResizeImage from "../hooks/useResizeImage";
+import "../../src/App.css";
 
 const Post = ({ post, postedBy }) => {
   const [user, setUser] = useState(null);
@@ -206,16 +207,39 @@ const Post = ({ post, postedBy }) => {
             </Flex>
 
             <Text fontSize={"sm"}>{post.text}</Text>
-            {post.img && (
-              <Box overflow={"hidden"}>
-                <Image
-                  src={post.img}
-                  // w={"full"}
-                  onLoad={handleImageLoad}
-                  style={{ width: imgSize.width, height: imgSize.height }}
-                  borderRadius={6}
-                />
-              </Box>
+            {post.img && post.img.length === 1 && (
+              <Flex overflow={"hidden"} wrap="wrap" gap={2}>
+                {post.img.map((imgUrl, index) => (
+                  <Box key={index} overflow={"hidden"}>
+                    <Image
+                      src={imgUrl}
+                      onLoad={handleImageLoad}
+                      style={{ width: imgSize.width, height: imgSize.height }}
+                      borderRadius={6}
+                    />
+                  </Box>
+                ))}
+              </Flex>
+            )}
+
+            {post.img && post.img.length > 1 && (
+              <Flex
+                overflowX="auto"
+                wrap="nowrap"
+                gap={2}
+                className="custom-scrollbar"
+              >
+                {post.img.map((imgUrl, index) => (
+                  <Image
+                    src={imgUrl}
+                    onLoad={handleImageLoad}
+                    w={"full"}
+                    style={{ width: imgSize.width, height: imgSize.height }}
+                    objectFit={"cover"}
+                    borderRadius={6}
+                  />
+                ))}
+              </Flex>
             )}
             <Flex gap={3} my={1}>
               <Actions post={post} postUser={user} />
