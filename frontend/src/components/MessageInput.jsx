@@ -79,7 +79,7 @@ const MessageInput = ({ setMessages }) => {
         return updatedConversations;
       });
       setMessageText("");
-      setImgUrl("");
+      // setImgUrl("");
     } catch (error) {
       showToast("Error", error.message, "error");
     } finally {
@@ -105,7 +105,7 @@ const MessageInput = ({ setMessages }) => {
         </InputGroup>
       </form>
       <Flex flex={5} cursor={"pointer"}>
-        <BsFillImageFill size={20} onClick={() => imageRef.current.click()} />
+        {/* <BsFillImageFill size={20} onClick={() => imageRef.current.click()} /> */}
         <Input
           type={"file"}
           hidden
