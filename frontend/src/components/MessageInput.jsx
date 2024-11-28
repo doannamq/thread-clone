@@ -32,12 +32,12 @@ const MessageInput = ({ setMessages }) => {
   const setConversations = useSetRecoilState(conversationsAtom);
   const imageRef = useRef(null);
   const { onClose } = useDisclosure();
-  const { handleImageChange, imgUrl, setImgUrl } = usePreviewImg();
+  const { handleImageChange, imgUrls, setImgUrls } = usePreviewImg();
   const [isSending, setIsSending] = useState(false);
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    if (!messageText && !imgUrl) return;
+    if (!messageText && !imgUrls.length === 0) return;
     if (isSending) return;
 
     setIsSending(true);
@@ -51,7 +51,7 @@ const MessageInput = ({ setMessages }) => {
         body: JSON.stringify({
           message: messageText,
           recipientId: selectedConversation.userId,
-          img: imgUrl,
+          imgs: imgUrls,
         }),
       });
       const data = await res.json();
@@ -79,7 +79,7 @@ const MessageInput = ({ setMessages }) => {
         return updatedConversations;
       });
       setMessageText("");
-      // setImgUrl("");
+      setImgUrls([]);
     } catch (error) {
       showToast("Error", error.message, "error");
     } finally {
@@ -105,19 +105,20 @@ const MessageInput = ({ setMessages }) => {
         </InputGroup>
       </form>
       <Flex flex={5} cursor={"pointer"}>
-        {/* <BsFillImageFill size={20} onClick={() => imageRef.current.click()} /> */}
+        <BsFillImageFill size={20} onClick={() => imageRef.current.click()} />
         <Input
           type={"file"}
           hidden
           ref={imageRef}
           onChange={handleImageChange}
+          multiple // Allow multiple file selection
         />
       </Flex>
       <Modal
-        isOpen={imgUrl}
+        isOpen={imgUrls.length > 0} // Check if there are images to display
         onClose={() => {
           onClose();
-          setImgUrl("");
+          setImgUrls([]);
         }}
         isCentered={true}
       >
@@ -126,8 +127,15 @@ const MessageInput = ({ setMessages }) => {
           <ModalHeader></ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Flex mt={5} w={"full"}>
-              <Image src={imgUrl} />
+            <Flex mt={5} w={"full"} flexWrap="wrap" gap={2}>
+              {imgUrls.map((url, index) => (
+                <Image
+                  key={index}
+                  src={url}
+                  boxSize="100px"
+                  objectFit="cover"
+                />
+              ))}
             </Flex>
             <Flex justifyContent={"flex-end"} my={2}>
               {!isSending ? (

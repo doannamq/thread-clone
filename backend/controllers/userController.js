@@ -154,14 +154,27 @@ const updateUser = async (req, res) => {
       user.password = hashedPassword;
     }
 
-    if (profilePic) {
-      if (user.profilePic) {
-        await cloudinary.uploader.destroy(
-          user.profilePic.split("/").pop().split(".")[0]
-        );
+    // if (profilePic) {
+    //   if (user.profilePic) {
+    //     await cloudinary.uploader.destroy(
+    //       user.profilePic.split("/").pop().split(".")[0]
+    //     );
+    //   }
+    //   const uploadResponse = await cloudinary.uploader.upload(profilePic);
+    //   profilePic = uploadResponse.secure_url;
+    // }
+
+    //user profilePic is an array
+    if (profilePic && profilePic.length > 0) {
+      if (user.profilePic && user.profilePic.length > 0) {
+        for (const pic of user.profilePic) {
+          await cloudinary.uploader.destroy(pic.split("/").pop().split(".")[0]);
+        }
       }
-      const uploadResponse = await cloudinary.uploader.upload(profilePic);
-      profilePic = uploadResponse.secure_url;
+      const uploadResponses = await Promise.all(
+        profilePic.map((pic) => cloudinary.uploader.upload(pic))
+      );
+      profilePic = uploadResponses.map((response) => response.secure_url);
     }
 
     user.name = name || user.name;
@@ -177,7 +190,9 @@ const updateUser = async (req, res) => {
       {
         $set: {
           "replies.$[reply].username": user.username,
-          "replies.$[reply].userProfilePic": user.profilePic,
+          // "replies.$[reply].userProfilePic": user.profilePic,
+          //user profilePic is an array
+          "replies.$[reply].userProfilePic": user.profilePic[0],
         },
       },
       { arrayFilters: [{ "reply.userId": userId }] }

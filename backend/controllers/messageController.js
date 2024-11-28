@@ -5,8 +5,8 @@ import { v2 as cloudinary } from "cloudinary";
 
 async function sendMessage(req, res) {
   try {
-    const { recipientId, message } = req.body;
-    let { img } = req.body;
+    const { recipientId, message, imgs } = req.body;
+    // let { img } = req.body;
     const senderId = req.user._id;
 
     let conversation = await Conversation.findOne({
@@ -25,17 +25,25 @@ async function sendMessage(req, res) {
       await conversation.save();
     }
 
-    if (img) {
-      const uploadedResponse = await cloudinary.uploader.upload(img);
+    // if (img) {
+    //   const uploadedResponse = await cloudinary.uploader.upload(img);
 
-      img = uploadedResponse.secure_url;
+    //   img = uploadedResponse.secure_url;
+    // }
+    //imgs is an array
+    let uploadedImgUrls = [];
+    if (imgs && imgs.length > 0) {
+      const uploadPromises = imgs.map((img) => cloudinary.uploader.upload(img));
+      const uploadResponses = await Promise.all(uploadPromises);
+      uploadedImgUrls = uploadResponses.map((response) => response.secure_url);
     }
 
     const newMessage = new Message({
       conversationId: conversation._id,
       sender: senderId,
       text: message,
-      img: img || "",
+      // img: img || "",
+      imgs: uploadedImgUrls,
     });
 
     await Promise.all([

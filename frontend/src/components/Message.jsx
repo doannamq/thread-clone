@@ -9,6 +9,7 @@ const Message = ({ ownMessage, message }) => {
   const selectedConversation = useRecoilValue(selectedConversationAtom);
   const user = useRecoilValue(userAtom);
   const [imgLoaded, setImgLoaded] = useState(false);
+
   return (
     <>
       {ownMessage ? (
@@ -27,30 +28,28 @@ const Message = ({ ownMessage, message }) => {
             </Flex>
           )}
 
-          {message.img && !imgLoaded && (
-            <Flex mt={5} w={"200px"}>
-              <Image
-                src={message.img}
-                hidden
-                onLoad={() => setImgLoaded(true)}
-                alt="Message image"
-                borderRadius={4}
-              />
-              <Skeleton w={"200px"} h={"200px"} />
-            </Flex>
-          )}
-
-          {message.img && imgLoaded && (
-            <Flex mt={5} w={"200px"}>
-              <Image src={message.img} alt="Message image" borderRadius={4} />
-              <Box
-                alignSelf={"flex-end"}
-                ml={1}
-                color={message.seen ? "blue.400" : ""}
-                fontWeight={"bold"}
-              >
-                <BsCheck2All size={16} />
-              </Box>
+          {message.imgs.length > 0 && (
+            <Flex mt={5} flexWrap="wrap" gap={2}>
+              {message.imgs.map((imgUrl, index) => (
+                <Box key={index} w={"200px"}>
+                  <Image
+                    src={imgUrl}
+                    alt={`Message image ${index + 1}`}
+                    borderRadius={4}
+                    onLoad={() => setImgLoaded(true)}
+                    hidden={!imgLoaded}
+                  />
+                  {!imgLoaded && <Skeleton w={"200px"} h={"200px"} />}
+                  <Box
+                    alignSelf={"flex-end"}
+                    ml={1}
+                    color={message.seen ? "blue.400" : ""}
+                    fontWeight={"bold"}
+                  >
+                    <BsCheck2All size={16} />
+                  </Box>
+                </Box>
+              ))}
             </Flex>
           )}
           <Avatar src={user.profilePic} w={7} h={7} />
@@ -71,22 +70,20 @@ const Message = ({ ownMessage, message }) => {
             </Text>
           )}
 
-          {message.img && !imgLoaded && (
-            <Flex mt={5} w={"200px"}>
-              <Image
-                src={message.img}
-                hidden
-                onLoad={() => setImgLoaded(true)}
-                alt="Message image"
-                borderRadius={4}
-              />
-              <Skeleton w={"200px"} h={"200px"} />
-            </Flex>
-          )}
-
-          {message.img && imgLoaded && (
-            <Flex mt={5} w={"200px"}>
-              <Image src={message.img} alt="Message image" borderRadius={4} />
+          {message.imgs.length > 0 && (
+            <Flex mt={5} flexWrap="wrap" gap={2}>
+              {message.imgs.map((imgUrl, index) => (
+                <Box key={index} w={"200px"}>
+                  <Image
+                    src={imgUrl}
+                    alt={`Message image ${index + 1}`}
+                    borderRadius={4}
+                    onLoad={() => setImgLoaded(true)}
+                    hidden={!imgLoaded}
+                  />
+                  {!imgLoaded && <Skeleton w={"200px"} h={"200px"} />}
+                </Box>
+              ))}
             </Flex>
           )}
         </Flex>

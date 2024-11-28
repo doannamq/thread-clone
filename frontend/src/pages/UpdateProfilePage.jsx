@@ -33,7 +33,7 @@ export default function UpdateProfilePage() {
 
   const showToast = useShowToast();
 
-  const { handleImageChange, imgUrl } = usePreviewImg();
+  const { handleImageChange, imgUrls } = usePreviewImg(); // imgUrls is now an array
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -45,7 +45,7 @@ export default function UpdateProfilePage() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ ...inputs, profilePic: imgUrl }),
+        body: JSON.stringify({ ...inputs, profilePic: imgUrls }),
       });
       const data = await res.json(); //update user object
       if (data.error) {
@@ -83,7 +83,7 @@ export default function UpdateProfilePage() {
                 <Avatar
                   size="xl"
                   boxShadow={"md"}
-                  src={imgUrl || user.profilePic}
+                  src={imgUrls.length > 0 ? imgUrls[0] : user.profilePic[0]}
                 />
               </Center>
               <Center w="full">
