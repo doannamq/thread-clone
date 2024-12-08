@@ -174,6 +174,7 @@ const Header = () => {
               alignItems={"center"}
               onClick={onOpen}
               cursor={"pointer"}
+              id="createPost"
             >
               <Box
                 as={RouterLink}
@@ -182,7 +183,7 @@ const Header = () => {
                 py={1}
                 borderRadius={"md"}
               >
-                <IoAddSharp size={24} color={iconColor} />
+                <IoAddSharp size={24} color={iconColor} id="createPost" />
               </Box>
               <Text
                 display={{ base: "none", md: "none", lg: "block" }}
@@ -202,6 +203,8 @@ const Header = () => {
                       placeholder="What's new ?"
                       onChange={handleTextChange}
                       value={postText}
+                      name="postText"
+                      id="postText"
                     />
                     <Text
                       fontSize={"xs"}
@@ -273,6 +276,8 @@ const Header = () => {
                     mr={3}
                     onClick={handleCreatePost}
                     isLoading={loading}
+                    name="postButton"
+                    id="postButton"
                   >
                     Post
                   </Button>
@@ -281,7 +286,7 @@ const Header = () => {
             </Modal>
             <Box as={RouterLink} to={`/chat`}>
               <Flex gap={2} alignItems={"center"}>
-                <IoChatbubble size={20} color={iconColor} />
+                <IoChatbubble size={20} color={iconColor} id="message" />
                 <Text
                   display={{ base: "none", md: "none", lg: "block" }}
                   color={iconColor}

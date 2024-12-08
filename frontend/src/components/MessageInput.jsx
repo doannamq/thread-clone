@@ -98,9 +98,10 @@ const MessageInput = ({ setMessages }) => {
             borderWidth={"1px"}
             borderStyle={"solid"}
             borderColor={useColorModeValue("gray.800", "gray.300")}
+            id="message-input"
           />
           <InputRightElement onClick={handleSendMessage} cursor={"pointer"}>
-            <IoSendSharp />
+            <IoSendSharp id="send-icon" />
           </InputRightElement>
         </InputGroup>
       </form>

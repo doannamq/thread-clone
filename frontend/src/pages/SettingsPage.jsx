@@ -53,7 +53,14 @@ export const SettingsPage = () => {
         </Button>
       </Link>
       <Box>
-        <Button size={"xs"} onClick={logout} mt={5} py={5} px={5}>
+        <Button
+          size={"xs"}
+          onClick={logout}
+          mt={5}
+          py={5}
+          px={5}
+          id="logoutButton"
+        >
           <FiLogOut size={20} />
           <Text ml={2} fontSize={"sm"}>
             Logout

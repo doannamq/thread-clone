@@ -132,7 +132,11 @@ const UserHeader = ({ user, onTabChange }) => {
 
       {currentUser?._id === user._id && (
         <Link as={RouterLink} to="/update">
-          <Button size={"sm"} bg={useColorModeValue("gray.300", "gray.700")}>
+          <Button
+            size={"sm"}
+            bg={useColorModeValue("gray.300", "gray.700")}
+            id="update-profile"
+          >
             Update Profile
           </Button>
         </Link>

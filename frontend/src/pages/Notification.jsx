@@ -65,6 +65,7 @@ const Notification = () => {
                     ? `/${user.username}/post/${notification.postId}`
                     : `/${notification.senderId.username}`
                 }
+                id={notification.postId}
               >
                 <Flex alignItems={"center"} mb={10}>
                   <Avatar

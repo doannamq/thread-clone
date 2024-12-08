@@ -52,6 +52,7 @@ const Conversation = ({ conversation, isOnline }) => {
           : ""
       }
       borderRadius={"md"}
+      id={conversation._id}
     >
       <WrapItem>
         <Avatar

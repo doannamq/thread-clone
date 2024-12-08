@@ -79,6 +79,7 @@ export default function LoginCard() {
             <FormControl isRequired>
               <FormLabel>User name</FormLabel>
               <Input
+                id="username"
                 type="text"
                 value={inputs.username}
                 onChange={(e) =>
@@ -90,6 +91,7 @@ export default function LoginCard() {
               <FormLabel>Password</FormLabel>
               <InputGroup>
                 <Input
+                  id="password"
                   type={showPassword ? "text" : "password"}
                   value={inputs.password}
                   onChange={(e) =>
@@ -111,6 +113,7 @@ export default function LoginCard() {
             <Stack spacing={10} pt={2}>
               <Button
                 // loadingText="Logging in"
+                id="login"
                 size="lg"
                 bg={useColorModeValue("gray.600", "gray.700")}
                 color={"white"}

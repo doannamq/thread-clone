@@ -108,6 +108,7 @@ const SearchUsersPage = () => {
         borderWidth={"1px"}
         borderStyle={"solid"}
         borderColor={useColorModeValue("gray.800", "gray.300")}
+        id="tìm kiếm người dùng"
       />
 
       {query === "" &&

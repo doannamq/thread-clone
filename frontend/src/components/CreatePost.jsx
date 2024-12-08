@@ -113,6 +113,7 @@ const CreatePost = () => {
                 placeholder="What's new ?"
                 onChange={handleTextChange}
                 value={postText}
+                name="postText"
               />
               <Text
                 fontSize={"xs"}
@@ -189,6 +190,7 @@ const CreatePost = () => {
               mr={3}
               onClick={handleCreatePost}
               isLoading={loading}
+              name="postButton"
             >
               Post
             </Button>

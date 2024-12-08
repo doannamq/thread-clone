@@ -107,6 +107,7 @@ export default function UpdateProfilePage() {
               type="text"
               value={inputs.name}
               onChange={(e) => setInputs({ ...inputs, name: e.target.value })}
+              id="fullName"
             />
           </FormControl>
           <FormControl>
@@ -119,6 +120,7 @@ export default function UpdateProfilePage() {
               onChange={(e) =>
                 setInputs({ ...inputs, username: e.target.value })
               }
+              id="userName"
             />
           </FormControl>
           <FormControl>
@@ -129,6 +131,7 @@ export default function UpdateProfilePage() {
               type="email"
               value={inputs.email}
               onChange={(e) => setInputs({ ...inputs, email: e.target.value })}
+              id="email"
             />
           </FormControl>
           <FormControl>
@@ -139,6 +142,7 @@ export default function UpdateProfilePage() {
               type="text"
               value={inputs.bio}
               onChange={(e) => setInputs({ ...inputs, bio: e.target.value })}
+              id="bio"
             />
           </FormControl>
           <FormControl>
@@ -151,6 +155,7 @@ export default function UpdateProfilePage() {
               onChange={(e) =>
                 setInputs({ ...inputs, password: e.target.value })
               }
+              id="password"
             />
           </FormControl>
           <Stack spacing={6} direction={["column", "row"]}>
@@ -173,6 +178,7 @@ export default function UpdateProfilePage() {
               }}
               type="submit"
               isLoading={updating}
+              id="submitButton"
             >
               Submit
             </Button>
