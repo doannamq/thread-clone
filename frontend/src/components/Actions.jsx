@@ -254,6 +254,7 @@ const Actions = ({ post, postUser }) => {
             role="img"
             viewBox="0 0 24 24"
             width="20"
+            id="comment"
           >
             <title>Comment</title>
             <path
@@ -336,6 +337,7 @@ const Actions = ({ post, postUser }) => {
                 placeholder={`Reply ${postUser?.username}...`}
                 value={reply}
                 onChange={(e) => setReply(e.target.value)}
+                id="reply"
               />
             </FormControl>
           </ModalBody>
@@ -347,6 +349,7 @@ const Actions = ({ post, postUser }) => {
               mr={3}
               onClick={handleReply}
               isLoading={isReplying}
+              id="replyButton"
             >
               Reply
             </Button>

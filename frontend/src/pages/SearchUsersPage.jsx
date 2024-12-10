@@ -103,7 +103,7 @@ const SearchUsersPage = () => {
         value={query}
         onChange={handleInputChange}
         onKeyPress={handleKeyPress}
-        placeholder="Tìm kiếm người dùng..."
+        placeholder="Search username ..."
         mb={4}
         borderWidth={"1px"}
         borderStyle={"solid"}

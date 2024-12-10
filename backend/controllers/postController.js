@@ -30,19 +30,6 @@ const createPost = async (req, res) => {
         .json({ error: `Text must be less than ${maxLength} characters` });
     }
 
-    // if (img) {
-    //   const uploadResponse = await cloudinary.uploader.upload(img);
-    //   img = uploadResponse.secure_url;
-    // }
-
-    // const newPost = new Post({
-    //   postedBy,
-    //   text,
-    //   img,
-    //   username: user.username,
-    //   userProfilePic: user.profilePic,
-    // });
-
     //img is an array
     let imgUrls = [];
     if (img && Array.isArray(img)) {
@@ -95,11 +82,6 @@ const deletePost = async (req, res) => {
     if (post.postedBy.toString() !== req.user._id.toString()) {
       return res.status(401).json({ error: "Unauthorized to delete post" });
     }
-
-    // if (post.img) {
-    //   const imgId = post.img.split("/").pop().split(".")[0];
-    //   await cloudinary.uploader.destroy(imgId);
-    // }
 
     //img is an array
     if (post.img && Array.isArray(post.img)) {

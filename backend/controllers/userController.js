@@ -10,10 +10,21 @@ import mongoose from "mongoose";
 const signupUser = async (req, res) => {
   try {
     const { name, email, username, password } = req.body;
+
+    if (!email.includes("@")) {
+      return res.status(400).json({ error: "Invalid email" });
+    }
+
+    if (password.length < 6) {
+      return res
+        .status(400)
+        .json({ error: "Password must be at least 6 characters" });
+    }
+
     const user = await User.findOne({ $or: [{ email }, { username }] });
 
     if (user) {
-      return res.status(400).json({ error: "Tên này đã tồn tại" });
+      return res.status(400).json({ error: "This username already exists" });
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -40,7 +51,7 @@ const signupUser = async (req, res) => {
     } else {
       res
         .status(404)
-        .json({ error: "Không thể xác thực thông tin người dùng" });
+        .json({ error: "Unable to authenticate user information" });
     }
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -59,9 +70,7 @@ const loginUser = async (req, res) => {
     );
 
     if (!user || !isPasswordCorrect) {
-      return res
-        .status(400)
-        .json({ error: "Tên đăng nhập hoặc mật khẩu không đúng" });
+      return res.status(400).json({ error: "Incorrect username or password" });
     }
 
     if (user.isFrozen) {
@@ -89,7 +98,7 @@ const loginUser = async (req, res) => {
 const logoutUser = (req, res) => {
   try {
     res.cookie("jwt", "", { maxAge: 1 });
-    res.status(200).json({ message: "Đã đăng xuất" });
+    res.status(200).json({ message: "Logged out" });
   } catch (error) {
     res.status(500).json({ error: error.message });
     console.log("Error in logout user: ", error.message);
@@ -153,16 +162,6 @@ const updateUser = async (req, res) => {
       const hashedPassword = await bcrypt.hash(password, salt);
       user.password = hashedPassword;
     }
-
-    // if (profilePic) {
-    //   if (user.profilePic) {
-    //     await cloudinary.uploader.destroy(
-    //       user.profilePic.split("/").pop().split(".")[0]
-    //     );
-    //   }
-    //   const uploadResponse = await cloudinary.uploader.upload(profilePic);
-    //   profilePic = uploadResponse.secure_url;
-    // }
 
     //user profilePic is an array
     if (profilePic && profilePic.length > 0) {

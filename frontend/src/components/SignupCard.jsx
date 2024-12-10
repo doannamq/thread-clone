@@ -25,6 +25,7 @@ import userAtom from "../../atoms/userAtom";
 export default function SignupCard() {
   const [showPassword, setShowPassword] = useState(false);
   const setAuthScreen = useSetRecoilState(authScreenAtom);
+  const [loading, setLoading] = useState(false);
   const [inputs, setInputs] = useState({
     name: "",
     username: "",
@@ -32,11 +33,44 @@ export default function SignupCard() {
     password: "",
   });
 
-  const showToast = useShowToast;
+  const showToast = useShowToast();
   const setUser = useSetRecoilState(userAtom);
 
+  const sanitizeInput = (input) => {
+    return input.replace(/[<>{}[\]"']/g, "");
+  };
+
+  const handleInputChange = (e, field) => {
+    const sanitizedValue = sanitizeInput(e.target.value);
+    setInputs((prev) => ({
+      ...prev,
+      [field]: sanitizedValue,
+    }));
+  };
+
   const handleSignup = async () => {
+    if (
+      !inputs.name.trim() ||
+      !inputs.username.trim() ||
+      !inputs.email.trim() ||
+      !inputs.password.trim()
+    ) {
+      showToast("Error", "Please fill in all information", "error");
+      return;
+    }
+
+    if (!inputs.email.includes("@")) {
+      showToast("Error", "Invalid email", "error");
+      return;
+    }
+
+    if (inputs.password.length < 6) {
+      showToast("Error", "Password must be at least 6 characters", "error");
+      return;
+    }
+
     try {
+      setLoading(true);
       const res = await fetch("/api/users/signup", {
         method: "POST",
         headers: {
@@ -45,6 +79,7 @@ export default function SignupCard() {
         body: JSON.stringify(inputs),
       });
       const data = await res.json();
+
       if (data.error) {
         showToast("Error", data.error, "error");
         return;
@@ -52,8 +87,11 @@ export default function SignupCard() {
 
       localStorage.setItem("user-threads", JSON.stringify(data));
       setUser(data);
+      showToast("Success", "Đăng ký thành công", "success");
     } catch (error) {
-      showToast("Error", error, "error");
+      showToast("Error", error.message, "error");
+    } finally {
+      setLoading(false);
     }
   };
 
