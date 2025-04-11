@@ -99,7 +99,13 @@ const userSchema = mongoose.Schema(
     password: {
       type: String,
       minLength: 6,
-      required: true,
+      required: function () {
+        return !this.googleId;
+      },
+    },
+    googleId: {
+      type: String,
+      default: null,
     },
     profilePic: {
       type: [String],

@@ -14,10 +14,20 @@ import { CopyIcon, PhoneIcon } from "@chakra-ui/icons";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import Peer from "simple-peer";
 import io from "socket.io-client";
+import { useRecoilValue } from "recoil";
+import userAtom from "../../atoms/userAtom";
 
-const socket = io.connect("http://localhost:5000");
+// Thay đổi cách kết nối socket với thêm các tùy chọn
+const socket = io("/", {
+  // Changed from "http://localhost:5000" for deployment
+  reconnection: true,
+  reconnectionDelay: 1000,
+  reconnectionAttempts: 5,
+  timeout: 10000,
+});
 
 function App() {
+  const currentUser = useRecoilValue(userAtom);
   const [me, setMe] = useState("");
   const [stream, setStream] = useState();
   const [receivingCall, setReceivingCall] = useState(false);
@@ -30,18 +40,49 @@ function App() {
   const myVideo = useRef();
   const userVideo = useRef();
   const connectionRef = useRef();
+  const [isCopied, setIsCopied] = useState(false);
+
+  const [endCallUserName, setEndCallUserName] = useState("");
+  const [showEndCallAlert, setShowEndCallAlert] = useState(false);
+
+  const [isIdReady, setIsIdReady] = useState(false);
+
+  // Thiết lập tên người dùng từ thông tin đăng nhập
+  useEffect(() => {
+    if (currentUser) {
+      setName(currentUser.username || currentUser.name || "");
+    }
+  }, [currentUser]);
 
   useEffect(() => {
+    if (!socket.connected) {
+      socket.connect();
+    }
+
     navigator.mediaDevices
       .getUserMedia({ video: true, audio: true })
       .then((stream) => {
         setStream(stream);
-        myVideo.current.srcObject = stream;
+        if (myVideo.current) {
+          myVideo.current.srcObject = stream;
+        }
+      })
+      .catch((err) => {
+        console.error("Không thể truy cập camera hoặc microphone:", err);
       });
 
     socket.on("me", (id) => {
       setMe(id);
+      setIsIdReady(true);
+      console.log("ID của tôi:", id);
     });
+
+    const idTimeoutCheck = setTimeout(() => {
+      if (!isIdReady) {
+        console.log("Không nhận được ID sau 5 giây, thử kết nối lại...");
+        socket.disconnect().connect();
+      }
+    }, 5000);
 
     socket.on("callUser", (data) => {
       setReceivingCall(true);
@@ -49,7 +90,30 @@ function App() {
       setName(data.name);
       setCallerSignal(data.signal);
     });
-  }, []);
+
+    socket.on("callEnded", (data) => {
+      if (callAccepted && !callEnded) {
+        setEndCallUserName(data.name || "Người dùng");
+        setCallEnded(true);
+        setShowEndCallAlert(true);
+
+        if (connectionRef.current) {
+          connectionRef.current.destroy();
+        }
+
+        setTimeout(() => {
+          setShowEndCallAlert(false);
+        }, 5000);
+      }
+    });
+
+    return () => {
+      socket.off("me");
+      socket.off("callUser");
+      socket.off("callEnded");
+      clearTimeout(idTimeoutCheck);
+    };
+  }, [callAccepted, callEnded, isIdReady]);
 
   useEffect(() => {
     if (stream && myVideo.current) {
@@ -102,13 +166,26 @@ function App() {
 
   const leaveCall = () => {
     setCallEnded(true);
-    connectionRef.current.destroy();
+
+    socket.emit("endCall", {
+      to: caller || idToCall,
+      name: name || "Người dùng",
+    });
+
+    if (connectionRef.current) {
+      connectionRef.current.destroy();
+    }
+  };
+
+  const handleCopy = () => {
+    setIsCopied(true);
+    setTimeout(() => setIsCopied(false), 2000);
   };
 
   return (
     <Container maxW="container.xl" py={8}>
       <Heading textAlign="center" mb={8} color="white">
-        Zoomish
+        Video Call
       </Heading>
 
       <Flex direction={{ base: "column", md: "row" }} gap={8}>
@@ -120,8 +197,7 @@ function App() {
               h="300px"
               bg="gray.800"
               rounded="lg"
-              overflow="hidden"
-            >
+              overflow="hidden">
               {stream && (
                 <video
                   playsInline
@@ -137,8 +213,7 @@ function App() {
               h="300px"
               bg="gray.800"
               rounded="lg"
-              overflow="hidden"
-            >
+              overflow="hidden">
               {callAccepted && !callEnded && (
                 <video
                   playsInline
@@ -153,21 +228,25 @@ function App() {
 
         {/* Controls */}
         <VStack flex={1} spacing={6} align="stretch">
-          <Input
-            placeholder="Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            size="lg"
-          />
+          {/* Hiển thị tên người dùng thay vì input */}
+          <Box p={2} bg="gray.700" rounded="md">
+            <Text color="white" fontWeight="medium">
+              Tên: {name}
+            </Text>
+          </Box>
 
-          <CopyToClipboard text={me}>
+          <CopyToClipboard text={me} onCopy={handleCopy}>
             <Button
               leftIcon={<CopyIcon />}
-              colorScheme="blue"
+              colorScheme={isCopied ? "green" : isIdReady ? "blue" : "gray"}
               size="lg"
               width="full"
-            >
-              Copy ID
+              isDisabled={!isIdReady}>
+              {isCopied
+                ? "Đã sao chép!"
+                : isIdReady
+                ? "Copy ID"
+                : "Đang tải ID..."}
             </Button>
           </CopyToClipboard>
 
@@ -203,6 +282,28 @@ function App() {
               </Text>
               <Button colorScheme="whiteAlpha" onClick={answerCall}>
                 Answer
+              </Button>
+            </VStack>
+          )}
+
+          {showEndCallAlert && (
+            <VStack
+              position="absolute"
+              top="50%"
+              left="50%"
+              transform="translate(-50%, -50%)"
+              bg="red.500"
+              p={4}
+              rounded="lg"
+              spacing={4}
+              zIndex={10}>
+              <Text color="white" fontSize="lg" fontWeight="bold">
+                Đã kết thúc cuộc gọi
+              </Text>
+              <Button
+                colorScheme="whiteAlpha"
+                onClick={() => setShowEndCallAlert(false)}>
+                Đóng
               </Button>
             </VStack>
           )}

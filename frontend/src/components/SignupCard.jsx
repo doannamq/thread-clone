@@ -21,6 +21,7 @@ import { useSetRecoilState } from "recoil";
 import authScreenAtom from "../../atoms/authAtom";
 import useShowToast from "../hooks/useShowToast";
 import userAtom from "../../atoms/userAtom";
+import GoogleLoginButton from "./GoogleLoginButton";
 
 export default function SignupCard() {
   const [showPassword, setShowPassword] = useState(false);
@@ -107,8 +108,7 @@ export default function SignupCard() {
           rounded={"lg"}
           bg={useColorModeValue("white", "gray.dark")}
           boxShadow={"lg"}
-          p={8}
-        >
+          p={8}>
           <Stack spacing={4}>
             <HStack>
               <Box>
@@ -161,8 +161,7 @@ export default function SignupCard() {
                     variant={"ghost"}
                     onClick={() =>
                       setShowPassword((showPassword) => !showPassword)
-                    }
-                  >
+                    }>
                     {showPassword ? <ViewIcon /> : <ViewOffIcon />}
                   </Button>
                 </InputRightElement>
@@ -177,10 +176,12 @@ export default function SignupCard() {
                 _hover={{
                   bg: useColorModeValue("gray.700", "gray.800"),
                 }}
-                onClick={handleSignup}
-              >
+                onClick={handleSignup}>
                 Sign up
               </Button>
+            </Stack>
+            <Stack>
+              <GoogleLoginButton />
             </Stack>
             <Stack pt={6}>
               <Text align={"center"}>

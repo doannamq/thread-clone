@@ -27,11 +27,9 @@ function App() {
         mb={{ base: "50px", md: "0" }}
         w="full"
         pt={{ base: "0", md: 5 }}
-        overflowX="hidden"
-      >
+        overflowX="hidden">
         <Container
-          maxW={pathname === "/" ? { base: "620px", md: "700px" } : "620px"}
-        >
+          maxW={pathname === "/" ? { base: "620px", md: "700px" } : "620px"}>
           <Routes>
             <Route
               path="/"

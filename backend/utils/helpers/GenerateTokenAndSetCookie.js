@@ -5,9 +5,10 @@ const generateTokenAndSetCookie = (userId, res) => {
   });
 
   res.cookie("jwt", token, {
-    httpOnly: true, //more secure
-    maxAge: 15 * 24 * 60 * 60 * 1000, // 15 day
-    sameSite: "strict", //CSRF
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: 15 * 24 * 60 * 60 * 1000,
   });
 
   return token;

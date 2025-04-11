@@ -10,6 +10,8 @@ import notificationRoutes from "./routes/notificationRoutes.js";
 import { v2 as cloudinary } from "cloudinary";
 import { app, server } from "./socket/socket.js";
 import job from "./cron/cron.js";
+import authRoutes from "./routes/authRoutes.js";
+import cors from "cors";
 
 dotenv.config();
 
@@ -18,6 +20,13 @@ job.start();
 
 const PORT = process.env.PORT || 5000;
 const __dirname = path.resolve();
+
+app.use(
+  cors({
+    origin: "http://localhost:3000", // URL của frontend
+    credentials: true, // Quan trọng để gửi cookie
+  })
+);
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOULD_NAME,
@@ -35,6 +44,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/auth", authRoutes);
 
 //http://localhost:5000 => backend,frontend
 

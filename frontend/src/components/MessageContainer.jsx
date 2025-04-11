@@ -134,9 +134,7 @@ const MessageContainer = () => {
   //   window.open(`/room/${callId}`, "_blank", windowFeatures);
   // }, [callId]);
   const handleJoinRoom = useCallback(() => {
-    navigate("/video", {
-      state: { userId: currentUser._id, otherId: selectedConversation.userId },
-    });
+    navigate("/video");
   }, []);
 
   return (
@@ -146,15 +144,13 @@ const MessageContainer = () => {
       bg={useColorModeValue("gray.200", "gray.dark")}
       borderRadius={"md"}
       flexDirection={"column"}
-      mb={"50px"}
-    >
+      mb={"50px"}>
       <Flex
         w={"full"}
         h={12}
         alignItems={"center"}
         justifyContent={"space-between"}
-        pr={5}
-      >
+        pr={5}>
         <Flex gap={2}>
           <Avatar src={selectedConversation.userProfilePic} size={"sm"} />
           <Text display={"flex"} alignItems={"center"}>
@@ -175,8 +171,7 @@ const MessageContainer = () => {
         my={4}
         px={2}
         h={"400px"}
-        overflowY={"auto"}
-      >
+        overflowY={"auto"}>
         {loadingMessages &&
           [...Array(5)].map((_, i) => (
             <Flex
@@ -185,8 +180,7 @@ const MessageContainer = () => {
               alignItems={"center"}
               p={1}
               borderRadius={"md"}
-              alignSelf={i % 2 === 0 ? "flex-start" : "flex-end"}
-            >
+              alignSelf={i % 2 === 0 ? "flex-start" : "flex-end"}>
               {i % 2 === 0 && <SkeletonCircle size={7} />}
               <Flex flexDir={"column"} gap={2}>
                 <Skeleton h={"8px"} w={"250px"} />
@@ -206,8 +200,7 @@ const MessageContainer = () => {
                 messages.length - 1 === messages.indexOf(message)
                   ? messageEndRef
                   : null
-              }
-            >
+              }>
               <Message
                 message={message}
                 ownMessage={currentUser._id === message.sender}

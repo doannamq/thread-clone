@@ -105,6 +105,40 @@ const logoutUser = (req, res) => {
   }
 };
 
+//Reset password
+const resetPassword = async (req, res) => {
+  try {
+    const { email, newPassword } = req.body;
+
+    if (!email || !newPassword) {
+      return res
+        .status(400)
+        .json({ error: "Email and new password are required" });
+    }
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Hash the new password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    // Update user's password
+    user.password = hashedPassword;
+    await user.save();
+
+    res.status(200).json({
+      message: "Password reset successful.",
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+    console.log("Error in resetPassword: ", error.message);
+  }
+};
+
 //Follow and Unfollow user
 const followUnFollowUser = async (req, res) => {
   try {
@@ -341,6 +375,22 @@ const getFollowing = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+const getCurrentUserProfile = async (req, res) => {
+  try {
+    // req.user đã được set bởi protectRoute middleware
+    const user = await User.findById(req.user._id).select("-password");
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+    console.log("Error in getCurrentUserProfile: ", error.message);
+  }
+};
 export {
   signupUser,
   loginUser,
@@ -354,4 +404,6 @@ export {
   searchSuggestedUser,
   getFollowers,
   getFollowing,
+  getCurrentUserProfile,
+  resetPassword,
 };

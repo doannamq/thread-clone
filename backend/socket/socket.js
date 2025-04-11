@@ -61,11 +61,10 @@ io.on("connection", (socket) => {
     io.to(data.to).emit("callAccepted", data.signal);
   });
 
-  socket.on("disconnect", () => {
-    console.log("user disconnected");
-    delete userSocketMap[userId];
-    io.emit("getOnlineUsers", Object.keys(userSocketMap));
-    socket.broadcast.emit("callEnded");
+  socket.on("endCall", (data) => {
+    io.to(data.to).emit("callEnded", {
+      name: data.name,
+    });
   });
 });
 
