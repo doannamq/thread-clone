@@ -18,8 +18,7 @@ import { useRecoilValue } from "recoil";
 import userAtom from "../../atoms/userAtom";
 
 // Thay đổi cách kết nối socket với thêm các tùy chọn
-const socket = io("/", {
-  // Changed from "http://localhost:5000" for deployment
+const socket = io.connect("http://localhost:5000", {
   reconnection: true,
   reconnectionDelay: 1000,
   reconnectionAttempts: 5,

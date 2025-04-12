@@ -110,8 +110,7 @@ const PostPage = () => {
             fontSize={"xs"}
             width={36}
             textAlign={"right"}
-            color={"gray.light"}
-          >
+            color={"gray.light"}>
             {formatDistanceToNow(new Date(currentPost.createdAt))} ago
           </Text>
 
@@ -126,6 +125,18 @@ const PostPage = () => {
       </Flex>
 
       <Text my={3}>{currentPost.text}</Text>
+
+      {/* Hiển thị video nếu có */}
+      {currentPost.video && (
+        <Box borderRadius={6} overflow="hidden" mb={4} maxH="600px">
+          <video
+            src={currentPost.video}
+            controls
+            preload="metadata"
+            style={{ width: "100%", maxHeight: "600px", objectFit: "contain" }}
+          />
+        </Box>
+      )}
 
       {currentPost.img && currentPost.img.length === 1 && (
         <Box borderRadius={6}>
@@ -146,8 +157,7 @@ const PostPage = () => {
             overflowX="auto"
             wrap="nowrap"
             gap={2}
-            className="custom-scrollbar"
-          >
+            className="custom-scrollbar">
             {currentPost.img.map((imgSrc, index) => (
               <Image
                 key={index}

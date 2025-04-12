@@ -6,7 +6,7 @@ import { v2 as cloudinary } from "cloudinary";
 const createPost = async (req, res) => {
   try {
     const { postedBy, text } = req.body;
-    let { img } = req.body;
+    let { img, video } = req.body;
 
     if (!postedBy || !text) {
       return res
@@ -39,10 +39,21 @@ const createPost = async (req, res) => {
       }
     }
 
+    //video upload to cloudinary
+    let videoUrl = null;
+    if (video) {
+      const uploadResponse = await cloudinary.uploader.upload(video, {
+        resource_type: "video",
+        folder: "thread_videos",
+      });
+      videoUrl = uploadResponse.secure_url;
+    }
+
     const newPost = new Post({
       postedBy,
       text,
       img: imgUrls,
+      video: videoUrl,
       username: user.username,
       userProfilePic: user.profilePic,
     });
@@ -52,7 +63,7 @@ const createPost = async (req, res) => {
     res.status(201).json(newPost);
   } catch (error) {
     res.status(500).json({ error: error.message });
-    console.log(err);
+    console.log(error);
   }
 };
 
@@ -89,6 +100,12 @@ const deletePost = async (req, res) => {
         const imgId = imageUrl.split("/").pop().split(".")[0];
         await cloudinary.uploader.destroy(imgId);
       }
+    }
+
+    //delete video if exists
+    if (post.video) {
+      const videoId = post.video.split("/").pop().split(".")[0];
+      await cloudinary.uploader.destroy(videoId, { resource_type: "video" });
     }
 
     await Post.findByIdAndDelete(req.params.id);

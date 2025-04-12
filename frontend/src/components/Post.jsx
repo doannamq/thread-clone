@@ -160,8 +160,7 @@ const Post = ({ post, postedBy }) => {
                   onClick={(e) => {
                     e.preventDefault();
                     navigate(`/${user.username}`);
-                  }}
-                >
+                  }}>
                   {user?.username}
                 </Text>
                 <Image src="/verified.png" w={4} h={4} ml={1} />
@@ -171,8 +170,7 @@ const Post = ({ post, postedBy }) => {
                   fontSize={"xs"}
                   width={36}
                   textAlign={"right"}
-                  color={"gray.light"}
-                >
+                  color={"gray.light"}>
                   {formatDistanceToNow(new Date(post.createdAt))} ago
                 </Text>
 
@@ -185,8 +183,7 @@ const Post = ({ post, postedBy }) => {
                   justifyContent="center"
                   alignItems="center"
                   onClick={handleMenuClick}
-                  _hover={{ bg: bgHover }}
-                >
+                  _hover={{ bg: bgHover }}>
                   <Menu>
                     <MenuButton>
                       <BsThreeDots cursor={"pointer"} />
@@ -195,8 +192,7 @@ const Post = ({ post, postedBy }) => {
                       <MenuList bg={useColorModeValue("gray.200", "gray.dark")}>
                         <MenuItem
                           bg={useColorModeValue("gray.200", "gray.dark")}
-                          onClick={copyURL}
-                        >
+                          onClick={copyURL}>
                           Copy Link
                         </MenuItem>
                       </MenuList>
@@ -207,6 +203,25 @@ const Post = ({ post, postedBy }) => {
             </Flex>
 
             <Text fontSize={"sm"}>{post.text}</Text>
+
+            {/* Hiển thị video nếu có */}
+            {post.video && (
+              <Box borderRadius={6} overflow="hidden" maxH="500px">
+                <video
+                  src={post.video}
+                  controls
+                  preload="metadata"
+                  style={{
+                    width: "100%",
+                    maxHeight: "500px",
+                    objectFit: "contain",
+                  }}
+                  onClick={(e) => e.preventDefault()}
+                />
+              </Box>
+            )}
+
+            {/* Hiển thị ảnh nếu có */}
             {post.img && post.img.length === 1 && (
               <Flex overflow={"hidden"} wrap="wrap" gap={2}>
                 {post.img.map((imgUrl, index) => (
@@ -227,10 +242,10 @@ const Post = ({ post, postedBy }) => {
                 overflowX="auto"
                 wrap="nowrap"
                 gap={2}
-                className="custom-scrollbar"
-              >
+                className="custom-scrollbar">
                 {post.img.map((imgUrl, index) => (
                   <Image
+                    key={index}
                     src={imgUrl}
                     onLoad={handleImageLoad}
                     w={"full"}

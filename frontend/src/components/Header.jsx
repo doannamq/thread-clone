@@ -29,6 +29,7 @@ import { FiLogOut } from "react-icons/fi";
 import useLogout from "../hooks/useLogout";
 import authScreenAtom from "../../atoms/authAtom";
 import { BsFillChatQuoteFill, BsFillImageFill } from "react-icons/bs";
+import { RiVideoFill } from "react-icons/ri";
 import { MdOutlineSettings } from "react-icons/md";
 import { IoAddSharp, IoChatbubble, IoSearch } from "react-icons/io5";
 import { FaBell } from "react-icons/fa";
@@ -51,6 +52,9 @@ const Header = () => {
   const [postText, setPostText] = useState("");
   const { handleImageChange, imgUrls, setImgUrls } = usePreviewImg();
   const imageRef = useRef(null);
+  const videoRef = useRef(null);
+  const [videoUrl, setVideoUrl] = useState("");
+  const [videoFile, setVideoFile] = useState(null);
   const [remainingChar, setRemainingChar] = useState(MAX_CHAR);
   const showToast = useShowToast();
   const [loading, setLoading] = useState(false);
@@ -69,7 +73,48 @@ const Header = () => {
     }
   };
 
+  const handleVideoChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("video/")) {
+      showToast("Invalid file type", "Please select a video file", "error");
+      return;
+    }
+
+    // Kiểm tra kích thước video (giới hạn 100MB)
+    if (file.size > 100 * 1024 * 1024) {
+      showToast("File too large", "Video must be less than 100MB", "error");
+      return;
+    }
+
+    setVideoFile(file);
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setVideoUrl(reader.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const clearVideo = () => {
+    setVideoUrl("");
+    setVideoFile(null);
+    if (videoRef.current) {
+      videoRef.current.value = "";
+    }
+  };
+
   const handleCreatePost = async () => {
+    if (videoUrl && imgUrls.length > 0) {
+      showToast(
+        "Error",
+        "You can't upload both images and video in one post",
+        "error"
+      );
+      return;
+    }
+
     setLoading(true);
     try {
       const res = await fetch("/api/posts/create", {
@@ -81,6 +126,7 @@ const Header = () => {
           postedBy: user._id,
           text: postText,
           img: imgUrls,
+          video: videoUrl,
         }),
       });
 
@@ -97,6 +143,8 @@ const Header = () => {
       onClose();
       setPostText("");
       setImgUrls([]);
+      setVideoUrl("");
+      setVideoFile(null);
       setRemainingChar(MAX_CHAR);
     } catch (error) {
       showToast("Error", error, "error");
@@ -115,16 +163,14 @@ const Header = () => {
       height={{ base: "50px", md: "100vh" }}
       bg={bg}
       color="white"
-      zIndex="1000"
-    >
+      zIndex="1000">
       <Flex
         justifyContent={"space-between"}
         flexDirection={{ base: "row", md: "column" }}
         alignItems={"center"}
         h={"full"}
         pt={5}
-        pb={10}
-      >
+        pb={10}>
         <Image
           cursor={"pointer"}
           alt="logo"
@@ -145,15 +191,13 @@ const Header = () => {
             h={"40%"}
             w={"full"}
             alignItems={"center"}
-            px={{ base: "10px", md: "10px" }}
-          >
+            px={{ base: "10px", md: "10px" }}>
             <Box as={RouterLink} to="/">
               <Flex gap={2} alignItems={"center"}>
                 <AiFillHome size={24} color={iconColor} />
                 <Text
                   display={{ base: "none", md: "none", lg: "block" }}
-                  color={iconColor}
-                >
+                  color={iconColor}>
                   Home
                 </Text>
               </Flex>
@@ -163,8 +207,7 @@ const Header = () => {
                 <IoSearch size={24} color={iconColor} />
                 <Text
                   display={{ base: "none", md: "none", lg: "block" }}
-                  color={iconColor}
-                >
+                  color={iconColor}>
                   Search
                 </Text>
               </Flex>
@@ -174,21 +217,18 @@ const Header = () => {
               alignItems={"center"}
               onClick={onOpen}
               cursor={"pointer"}
-              id="createPost"
-            >
+              id="createPost">
               <Box
                 as={RouterLink}
                 bg={useColorModeValue("gray.300", "gray.500")}
                 px={2}
                 py={1}
-                borderRadius={"md"}
-              >
+                borderRadius={"md"}>
                 <IoAddSharp size={24} color={iconColor} id="createPost" />
               </Box>
               <Text
                 display={{ base: "none", md: "none", lg: "block" }}
-                color={iconColor}
-              >
+                color={iconColor}>
                 Create
               </Text>
             </Flex>
@@ -211,9 +251,7 @@ const Header = () => {
                       fontWeight={"bold"}
                       textAlign={"right"}
                       m={1}
-                      // color={"gray.800"}
-                      useColorModeValue={("white", "black")}
-                    >
+                      useColorModeValue={("white", "black")}>
                       {remainingChar}/{MAX_CHAR}
                     </Text>
 
@@ -223,12 +261,50 @@ const Header = () => {
                       ref={imageRef}
                       onChange={handleImageChange}
                       multiple
+                      accept="image/*"
                     />
-                    <BsFillImageFill
-                      style={{ marginLeft: "5px", cursor: "pointer" }}
-                      size={16}
-                      onClick={() => imageRef.current.click()}
+
+                    <Input
+                      type="file"
+                      hidden
+                      ref={videoRef}
+                      onChange={handleVideoChange}
+                      accept="video/*"
                     />
+
+                    <Flex alignItems={"center"} gap={4} mt={2}>
+                      <Flex alignItems={"center"}>
+                        <BsFillImageFill
+                          style={{
+                            marginLeft: "5px",
+                            cursor: videoUrl ? "not-allowed" : "pointer",
+                          }}
+                          size={16}
+                          onClick={() => !videoUrl && imageRef.current.click()}
+                          color={videoUrl ? "gray" : iconColor}
+                        />
+                        <Text ml={2} fontSize="xs" color={iconColor}>
+                          {imgUrls.length} images
+                        </Text>
+                      </Flex>
+
+                      <Flex alignItems={"center"}>
+                        <RiVideoFill
+                          style={{
+                            cursor:
+                              imgUrls.length > 0 ? "not-allowed" : "pointer",
+                          }}
+                          size={20}
+                          onClick={() =>
+                            imgUrls.length === 0 && videoRef.current.click()
+                          }
+                          color={imgUrls.length > 0 ? "gray" : iconColor}
+                        />
+                        <Text ml={2} fontSize="xs" color={iconColor}>
+                          {videoUrl ? "1 video" : "0 video"}
+                        </Text>
+                      </Flex>
+                    </Flex>
                   </FormControl>
 
                   {imgUrls.length > 0 && (
@@ -237,16 +313,14 @@ const Header = () => {
                       w={"full"}
                       overflowX="auto"
                       wrap="nowrap"
-                      className="custom-scrollbar"
-                    >
+                      className="custom-scrollbar">
                       {imgUrls.map((url, index) => (
                         <Box
                           key={index}
                           position={"relative"}
                           mr={3}
                           minW="200px"
-                          maxW="200px"
-                        >
+                          maxW="200px">
                           <Image
                             src={url}
                             alt={`Selected img ${index + 1}`}
@@ -268,6 +342,26 @@ const Header = () => {
                       ))}
                     </Flex>
                   )}
+
+                  {videoUrl && (
+                    <Box position="relative" mt={5}>
+                      <video
+                        src={videoUrl}
+                        controls
+                        width="100%"
+                        height="auto"
+                        style={{ maxHeight: "300px" }}
+                      />
+                      <CloseButton
+                        onClick={clearVideo}
+                        bg={"gray.800"}
+                        position={"absolute"}
+                        top={1}
+                        right={1}
+                        size={"sm"}
+                      />
+                    </Box>
+                  )}
                 </ModalBody>
 
                 <ModalFooter>
@@ -277,8 +371,7 @@ const Header = () => {
                     onClick={handleCreatePost}
                     isLoading={loading}
                     name="postButton"
-                    id="postButton"
-                  >
+                    id="postButton">
                     Post
                   </Button>
                 </ModalFooter>
@@ -289,8 +382,7 @@ const Header = () => {
                 <IoChatbubble size={20} color={iconColor} id="message" />
                 <Text
                   display={{ base: "none", md: "none", lg: "block" }}
-                  color={iconColor}
-                >
+                  color={iconColor}>
                   Message
                 </Text>
               </Flex>
@@ -300,8 +392,7 @@ const Header = () => {
                 <FaUser size={24} color={iconColor} />
                 <Text
                   display={{ base: "none", md: "none", lg: "block" }}
-                  color={iconColor}
-                >
+                  color={iconColor}>
                   Profile
                 </Text>
               </Flex>
@@ -316,15 +407,13 @@ const Header = () => {
             right={{ base: "0", md: "auto" }}
             mt={{ base: "5px", md: "0px" }}
             mr={{ base: "5px", md: "0px" }}
-            display={{ base: "flex", md: "block", lg: "block" }}
-          >
+            display={{ base: "flex", md: "block", lg: "block" }}>
             <Box as={RouterLink} to={`/notifications`}>
               <Flex alignItems={"center"} gap={2}>
                 <FaBell size={18} color={iconColor} />
                 <Text
                   display={{ base: "none", md: "none", lg: "block" }}
-                  color={iconColor}
-                >
+                  color={iconColor}>
                   Notification
                 </Text>
               </Flex>
@@ -334,8 +423,7 @@ const Header = () => {
                 <MdOutlineSettings size={20} color={iconColor} />
                 <Text
                   display={{ base: "none", md: "none", lg: "block" }}
-                  color={iconColor}
-                >
+                  color={iconColor}>
                   Setting
                 </Text>
               </Flex>
